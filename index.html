@@ -1259,6 +1259,10 @@ img{max-width:100%;display:block;}
   #backToTop{bottom:70px;right:14px;width:38px;height:38px;}
 }
 
+@keyframes livepulse{
+  0%,100%{box-shadow:0 0 0 2px rgba(22,163,74,.3);}
+  50%{box-shadow:0 0 0 5px rgba(22,163,74,.1);}
+}
 /* ── Star ratings ─────────────────────────────────────────── */
 .rate-star{font-size:2rem;cursor:pointer;transition:transform .15s;display:inline-block;filter:grayscale(1);opacity:.4;}
 .rate-star.active{filter:none;opacity:1;transform:scale(1.15);}
@@ -1291,6 +1295,47 @@ img{max-width:100%;display:block;}
 <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top"><i class="fa-solid fa-chevron-up"></i></button>
 
 <!-- ============================================================
+     LOCATION SPLASH — shown on first visit before home renders
+============================================================ -->
+<div id="locSplash" style="
+  display:none;
+  position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(160deg,#0f0a06 0%,#1a0f05 50%,#2a1508 100%);
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+">
+  <!-- Logo -->
+  <div style="font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+    <i class="fa-solid fa-bowl-food" style="color:var(--p);"></i>Home<em style="color:var(--p);font-style:normal;">Bite</em>
+  </div>
+
+  <!-- Icon -->
+  <div id="locSplashIcon" style="font-size:4rem;margin:18px 0 10px;">📍</div>
+
+  <!-- Title -->
+  <h2 id="locSplashTitle" style="font-family:var(--display);font-size:1.7rem;color:#fff;margin-bottom:10px;max-width:340px;">Where are you?</h2>
+  <p id="locSplashSub" style="color:rgba(255,255,255,.65);font-size:.92rem;line-height:1.6;margin-bottom:30px;max-width:320px;">
+    Allow location to discover nearby home kitchens and get food delivered to your door.
+  </p>
+
+  <!-- Buttons -->
+  <div id="locSplashBtns" style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;">
+    <button onclick="splashUseGPS()" id="splashGpsBtn"
+      style="background:var(--p);color:#fff;border:none;border-radius:var(--rpill);padding:14px 24px;font-weight:700;font-size:.95rem;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;">
+      <i class="fa-solid fa-crosshairs"></i>Use My Location
+    </button>
+    <button onclick="splashSearchArea()"
+      style="background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:var(--rpill);padding:13px 24px;font-weight:600;font-size:.92rem;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;">
+      <i class="fa-solid fa-magnifying-glass"></i>Search My Area
+    </button>
+    <button onclick="splashSkip()"
+      style="background:none;color:rgba(255,255,255,.45);border:none;padding:10px;font-size:.84rem;cursor:pointer;font-family:var(--font);">
+      Skip for now — browse all
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
      NAVBAR
      Desktop: Logo | Search | Nav links | Cart | Login/User
      Mobile:  Logo | Location pill | (cart hidden — bottom bar)
@@ -1307,22 +1352,15 @@ img{max-width:100%;display:block;}
     <div class="nav-location" id="navLocation" onclick="requestLocation()" title="Tap to detect your location">
       <i class="fa-solid fa-location-dot" id="locIcon"></i>
       <span id="locText">Detecting…</span>
+      <!-- Live tracking pulse dot -->
+      <span id="liveTrackIndicator" title="Live GPS tracking active" style="display:none;align-items:center;margin-left:2px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;box-shadow:0 0 0 2px rgba(22,163,74,.3);animation:livepulse 1.5s ease-in-out infinite;"></span>
+      </span>
       <i class="fa-solid fa-chevron-down loc-arrow"></i>
     </div>
 
     <!-- Desktop-only group: search + nav links + actions -->
     <div class="nav-desktop-group">
-
-      <!-- Search bar -->
-      <div class="nav-search-wrap">
-        <div class="nav-search" id="navSearchBox">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="navSearch" placeholder="Search for food, restaurants..." autocomplete="off"
-            oninput="onNavSearch(this.value)" onfocus="onNavSearchFocus()" onblur="setTimeout(closeNavSearch,180)"/>
-        </div>
-        <div class="search-dropdown" id="navSearchDd"></div>
-      </div>
-
       <!-- Nav links -->
       <ul class="nav-links" id="navLinks">
         <li><span class="nl active" data-page="page-home"    onclick="showHome()">Home</span></li>
@@ -1435,7 +1473,7 @@ img{max-width:100%;display:block;}
     <div class="hero-inner">
       <div class="hero-left">
         <h1>Homemade Food,<br/><em>Delivered Fast</em></h1>
-        <p>Order from real home chefs across Dhaka. Fresh, authentic, and made with love — delivered to your door in 30–45 minutes.</p>
+        <p>Order from real home chefs across Bangladesh. Fresh, authentic, and made with love — delivered to your door.</p>
         <div class="hero-search">
           <i class="fa-solid fa-magnifying-glass" style="color:var(--muted);margin-right:4px;"></i>
           <input type="text" id="heroSearch" placeholder="Search for biryani, curry, dessert..."/>
@@ -1471,6 +1509,7 @@ img{max-width:100%;display:block;}
     </div>
   </div>
 
+  <!-- Location prompt banner — shown on first visit until location is set -->
   <!-- Sellers -->
   <div class="section" id="sellers">
     <div class="con">
@@ -1515,7 +1554,7 @@ img{max-width:100%;display:block;}
     <div class="con footer-grid" style="margin-bottom:28px;">
       <div>
         <div class="nav-logo" style="color:#fff;margin-bottom:10px;font-size:1.2rem;"><i class="fa-solid fa-bowl-food"></i>Home<em>Bite</em></div>
-        <p style="font-size:.84rem;line-height:1.65;max-width:280px;">Connecting home chefs with food lovers across Dhaka. Fresh, authentic, delivered with care.</p>
+        <p style="font-size:.84rem;line-height:1.65;max-width:280px;">Connecting home chefs with food lovers across Bangladesh. Fresh, authentic, delivered with care.</p>
       </div>
       <div><h4 style="color:#fff;font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Platform</h4>
         <div style="display:flex;flex-direction:column;gap:8px;font-size:.84rem;">
@@ -1528,7 +1567,7 @@ img{max-width:100%;display:block;}
         <div style="display:flex;flex-direction:column;gap:8px;font-size:.84rem;">
           <span>📞 +880 1700-000000</span>
           <span>📧 hello@homebite.com.bd</span>
-          <span>📍 Dhaka, Bangladesh</span>
+          <span>📍 Bangladesh</span>
         </div>
       </div>
     </div>
@@ -1603,7 +1642,7 @@ img{max-width:100%;display:block;}
       <div class="auth-brand">
         <div class="nav-logo" onclick="showHome()" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.2rem;color:#fff;"><i class="fa-solid fa-bowl-food"></i>Home<em>Bite</em></div>
         <h2 style="margin-top:28px;">Join HomeBite as a Buyer</h2>
-        <p>Create your free account and order fresh homemade food from real home chefs in Dhaka.</p>
+        <p>Create your free account and order fresh homemade food from real home chefs near you.</p>
         <div class="auth-feat"><i class="fa-solid fa-check-circle"></i>Free account, no commitments</div>
         <div class="auth-feat"><i class="fa-solid fa-check-circle"></i>Order history & live tracking</div>
         <div class="auth-feat"><i class="fa-solid fa-check-circle"></i>Reorder with one click</div>
@@ -1620,7 +1659,7 @@ img{max-width:100%;display:block;}
           <div class="field"><label>Full Name</label><div class="field-wrap"><i class="fi fa-solid fa-user"></i><input type="text" id="brName" placeholder="Your full name" required/></div></div>
           <div class="field"><label>Email Address</label><div class="field-wrap"><i class="fi fa-solid fa-envelope"></i><input type="email" id="brEmail" placeholder="your@email.com" required/></div></div>
           <div class="field"><label>Phone Number</label><div class="field-wrap"><i class="fi fa-solid fa-phone"></i><input type="tel" id="brPhone" placeholder="+880 1XXXXXXXXX" required/></div></div>
-          <div class="field"><label>Delivery Address</label><div class="field-wrap"><i class="fi fa-solid fa-location-dot"></i><input type="text" id="brAddr" placeholder="Your delivery address in Dhaka" required/></div></div>
+          <div class="field"><label>Delivery Address</label><div class="field-wrap"><i class="fi fa-solid fa-location-dot"></i><input type="text" id="brAddr" placeholder="Your delivery address (e.g. Dhanmondi, Dhaka)" required/></div></div>
           <div class="field-row">
             <div class="field"><label>Password</label><div class="field-wrap"><i class="fi fa-solid fa-lock"></i><input type="password" id="brPass" placeholder="Min 6 chars" required/><button type="button" class="toggle-pw" onclick="togglePw('brPass',this)"><i class="fa-solid fa-eye"></i></button></div></div>
             <div class="field"><label>Confirm</label><div class="field-wrap"><i class="fi fa-solid fa-lock"></i><input type="password" id="brPass2" placeholder="Repeat" required/></div></div>
@@ -1644,7 +1683,7 @@ img{max-width:100%;display:block;}
       <div class="auth-brand">
         <div class="nav-logo" onclick="showHome()" style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.2rem;color:#fff;"><i class="fa-solid fa-bowl-food"></i>Home<em>Bite</em></div>
         <h2 style="margin-top:28px;">Start Selling on HomeBite</h2>
-        <p>Register your home kitchen and start earning by selling your food to customers across Dhaka.</p>
+        <p>Register your home kitchen and start earning by selling your food to customers across Bangladesh.</p>
         <div class="auth-feat"><i class="fa-solid fa-check-circle"></i>Your own seller dashboard</div>
         <div class="auth-feat"><i class="fa-solid fa-check-circle"></i>Manage menu in real-time</div>
         <div class="auth-feat"><i class="fa-solid fa-check-circle"></i>Track orders & revenue</div>
@@ -1662,7 +1701,7 @@ img{max-width:100%;display:block;}
           <div class="field"><label>Email Address</label><div class="field-wrap"><i class="fi fa-solid fa-envelope"></i><input type="email" id="srEmail" placeholder="business@email.com" required/></div></div>
           <div class="field"><label>Phone Number</label><div class="field-wrap"><i class="fi fa-solid fa-phone"></i><input type="tel" id="srPhone" placeholder="+880 1XXXXXXXXX" required/></div></div>
           <div class="field"><label>Kitchen / Business Name</label><div class="field-wrap"><i class="fi fa-solid fa-store"></i><input type="text" id="srKitchen" placeholder="e.g. Amma's Kitchen" required/></div></div>
-          <div class="field"><label>Kitchen Address</label><div class="field-wrap"><i class="fi fa-solid fa-location-dot"></i><input type="text" id="srAddr" placeholder="Your kitchen location" required/></div></div>
+          <div class="field"><label>Kitchen Address</label><div class="field-wrap"><i class="fi fa-solid fa-location-dot"></i><input type="text" id="srAddr" placeholder="e.g. Mirpur, Dhaka or Agrabad, Chittagong" required/></div></div>
           <div class="field-row">
             <div class="field"><label>Password</label><div class="field-wrap"><i class="fi fa-solid fa-lock"></i><input type="password" id="srPass" placeholder="Min 6 chars" required/><button type="button" class="toggle-pw" onclick="togglePw('srPass',this)"><i class="fa-solid fa-eye"></i></button></div></div>
             <div class="field"><label>Confirm</label><div class="field-wrap"><i class="fi fa-solid fa-lock"></i><input type="password" id="srPass2" placeholder="Repeat" required/></div></div>
@@ -1795,7 +1834,7 @@ img{max-width:100%;display:block;}
               </div>
               <div class="pi-box"><i class="fa-solid fa-phone"></i><div class="pi-inner"><small>Phone Number</small><input type="tel" id="spPhone" placeholder="+880 1XXXXXXXXX"/></div></div>
               <div class="pi-box"><i class="fa-solid fa-envelope"></i><div class="pi-inner"><small>Email (read-only)</small><input type="email" id="spEmail" readonly style="opacity:.6;cursor:not-allowed;"/></div></div>
-              <div class="pi-box"><i class="fa-solid fa-location-dot"></i><div class="pi-inner"><small>Kitchen Address</small><input type="text" id="spAddr" placeholder="Your kitchen location in Dhaka"/></div></div>
+              <div class="pi-box"><i class="fa-solid fa-location-dot"></i><div class="pi-inner"><small>Kitchen Address</small><input type="text" id="spAddr" placeholder="e.g. Mirpur 10, Dhaka or Agrabad, Chittagong"/></div></div>
               <div class="pi-box" style="align-items:flex-start;"><i class="fa-solid fa-align-left" style="margin-top:4px;"></i><div class="pi-inner"><small>Kitchen Description (shown to customers)</small><textarea id="spDesc" rows="3" placeholder="Tell customers about your kitchen, specialties, and cooking style..." style="background:none;border:none;outline:none;font-size:.88rem;font-weight:500;color:var(--dark);width:100%;resize:none;line-height:1.5;font-family:var(--font);"></textarea></div></div>
               <button class="btn btn-primary" id="saveSellerProfileBtn" onclick="saveSellerProfile()" style="margin-top:6px;"><i class="fa-solid fa-floppy-disk"></i>Save Changes</button>
 
@@ -1990,7 +2029,7 @@ img{max-width:100%;display:block;}
 
       <!-- Popular areas quick-select -->
       <div style="margin-top:14px;">
-        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Popular Areas in Dhaka</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Cities & Areas — Bangladesh</div>
         <div style="display:flex;flex-wrap:wrap;gap:7px;" id="locQuickAreas"></div>
       </div>
 
@@ -2027,10 +2066,11 @@ img{max-width:100%;display:block;}
     <div class="sheet-handle"></div>
     <div class="sheet-body" style="padding:0 0 24px;">
       <!-- Hero image area -->
-      <div id="fdHero" style="height:180px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff5ef,var(--light));font-size:5.5rem;position:relative;border-radius:var(--r24) var(--r24) 0 0;flex-shrink:0;">
+      <div id="fdHero" style="height:200px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff5ef,var(--light));font-size:5.5rem;position:relative;border-radius:var(--r24) var(--r24) 0 0;flex-shrink:0;overflow:hidden;">
         <button class="sheet-close" onclick="closeModal('foodDetailModal')" style="position:absolute;top:14px;right:14px;z-index:10;width:34px;height:34px;background:rgba(255,255,255,.9);box-shadow:var(--sh1);"><i class="fa-solid fa-xmark"></i></button>
+        <img id="fdHeroImg" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/>
         <span id="fdEmoji">🍽️</span>
-        <div id="fdFavBtn" style="position:absolute;top:14px;left:14px;"></div>
+        <div id="fdFavBtn" style="position:absolute;top:14px;left:14px;z-index:10;"></div>
       </div>
       <div style="padding:18px 20px 0;">
         <!-- Tag + seller -->
@@ -2211,6 +2251,51 @@ img{max-width:100%;display:block;}
       <p style="font-size:.83rem;color:var(--muted);margin-bottom:16px;">This item will <strong>instantly appear on the store</strong> once saved.</p>
       <form id="miForm">
         <input type="hidden" id="miId"/>
+
+        <!-- Image upload area -->
+        <div class="field" style="margin-bottom:16px;">
+          <label>Food Photo</label>
+          <div id="miImgWrap" onclick="document.getElementById('miImgFile').click()"
+            style="border:2px dashed var(--border);border-radius:var(--r16);height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:var(--light);transition:all .2s;position:relative;overflow:hidden;"
+            ondragover="event.preventDefault();this.style.borderColor='var(--p)';this.style.background='#fff5ef'"
+            ondragleave="this.style.borderColor='var(--border)';this.style.background='var(--light)'"
+            ondrop="handleImgDrop(event)">
+            <img id="miImgPreview" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:var(--r14);"/>
+            <div id="miImgPlaceholder" style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <i class="fa-solid fa-camera" style="font-size:1.8rem;color:var(--muted);opacity:.5;"></i>
+              <span style="font-size:.82rem;font-weight:600;color:var(--muted);">Tap to upload photo</span>
+              <span style="font-size:.73rem;color:var(--muted);opacity:.7;">or drag & drop · JPG, PNG, WEBP</span>
+            </div>
+            <button type="button" id="miImgRemove" onclick="removeMenuImg(event)" style="display:none;position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:.75rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <input type="file" id="miImgFile" accept="image/*" style="display:none;" onchange="handleImgFile(this)"/>
+          <!-- OR paste URL -->
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+            <span style="font-size:.72rem;color:var(--muted);font-weight:600;">OR</span>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <div style="flex:1;display:flex;align-items:center;gap:8px;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r12);padding:8px 12px;">
+              <i class="fa-solid fa-link" style="color:var(--muted);font-size:.82rem;flex-shrink:0;"></i>
+              <input type="url" id="miImgUrl" placeholder="Paste image URL…"
+                style="flex:1;border:none;background:none;outline:none;font-size:.84rem;color:var(--text);"
+                oninput="previewImgUrl(this.value)"/>
+            </div>
+          </div>
+          <!-- Emoji fallback -->
+          <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+            <span style="font-size:.72rem;color:var(--muted);font-weight:600;">OR USE EMOJI (if no photo)</span>
+            <div style="flex:1;height:1px;background:var(--border);"></div>
+          </div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r12);padding:8px 12px;">
+            <i class="fi fa-regular fa-face-smile" style="color:var(--muted);flex-shrink:0;"></i>
+            <input type="text" id="miEmoji" placeholder="🍛  (emoji fallback if no photo)" maxlength="4"
+              style="flex:1;border:none;background:none;outline:none;font-size:.92rem;color:var(--text);"/>
+          </div>
+        </div>
+
         <div class="field"><label>Food Name *</label><div class="field-wrap"><i class="fi fa-solid fa-utensils"></i><input type="text" id="miName" placeholder="e.g. Chicken Biryani" required/></div></div>
         <div class="field"><label>Description *</label><div class="field-wrap"><i class="fi fa-solid fa-align-left"></i><input type="text" id="miDesc" placeholder="Short appetizing description" required/></div></div>
         <div class="field-row">
@@ -2219,10 +2304,7 @@ img{max-width:100%;display:block;}
             <select id="miCat" required style="padding-left:36px;"><option value="rice">Rice & Biryani</option><option value="curry">Curries</option><option value="bread">Bread</option><option value="dessert">Desserts</option><option value="drinks">Drinks</option><option value="snacks">Snacks</option></select>
           </div></div>
         </div>
-        <div class="field-row">
-          <div class="field"><label>Emoji</label><div class="field-wrap"><i class="fi fa-regular fa-face-smile"></i><input type="text" id="miEmoji" placeholder="🍛" maxlength="4"/></div></div>
-          <div class="field"><label>Tag</label><div class="field-wrap"><i class="fi fa-solid fa-certificate"></i><input type="text" id="miTag" placeholder="Bestseller"/></div></div>
-        </div>
+        <div class="field"><label>Tag</label><div class="field-wrap"><i class="fi fa-solid fa-certificate"></i><input type="text" id="miTag" placeholder="Bestseller, Fresh, Popular…"/></div></div>
         <div class="field" style="margin-bottom:18px;"><label class="check-row"><input type="checkbox" id="miAvail" checked/>&nbsp;Show on store (available now)</label></div>
         <button type="submit" class="btn btn-primary btn-full btn-lg"><i class="fa-solid fa-floppy-disk"></i>Save & Publish to Store</button>
       </form>
@@ -2374,11 +2456,19 @@ function showPage(id){
   document.getElementById("navbar").style.display=isMain?"block":"none";
   const mobNav=document.getElementById("mobNav");
   if(mobNav)mobNav.classList.toggle("mob-nav-hidden",!isMain);
-  // Update desktop nav active link
   updateDesktopNav(id);
-  // Sync mobile bottom nav
   if(id==="page-home")updateMobNav("home");
   else if(id==="page-track")updateMobNav("track");
+  // Real-time GPS tracking only while home page is visible
+  if(id==="page-home"){
+    if(navigator.permissions){
+      navigator.permissions.query({name:"geolocation"}).then(r=>{
+        if(r.state==="granted") startRealtimeTracking();
+      }).catch(()=>{});
+    }
+  } else {
+    stopRealtimeTracking();
+  }
 }
 function showHome(){showPage("page-home");initHome();}
 function showNavbar(){document.getElementById("navbar").style.display="block";}
@@ -2459,7 +2549,7 @@ function renderNavSearchDd(query){
     html+=`<div class="sd-section"><div class="sd-label"><i class="fa-solid fa-utensils"></i> Food</div>`;
     html+=matchItems.map(item=>`
       <div class="sd-item" onclick="navSearchSelect('item',${item.id})">
-        <div class="sd-emoji">${item.emoji||"🍽️"}</div>
+        <div class="sd-emoji">${getItemImg(item)?`<img src="${getItemImg(item)}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r8);"/>`:(item.emoji||"🍽️")}</div>
         <div class="sd-info"><strong>${highlight(item.name,q)}</strong><small>${item.seller||"Home Kitchen"}</small></div>
         <span class="sd-price">৳${item.price}</span>
       </div>`).join("");
@@ -2471,7 +2561,7 @@ function renderNavSearchDd(query){
     html+=matchSellers.map(s=>`
       <div class="sd-seller-row" onclick="navSearchSelect('seller',${s.id})">
         <div class="sd-sav">${(s.kitchen||s.name).charAt(0)}</div>
-        <div class="sd-info"><strong>${highlight(s.kitchen||s.name,q)}</strong><small>${s.addr||"Dhaka"}</small></div>
+        <div class="sd-info"><strong>${highlight(s.kitchen||s.name,q)}</strong><small>${s.addr||"Bangladesh"}</small></div>
         <i class="fa-solid fa-chevron-right" style="font-size:.7rem;color:var(--muted);"></i>
       </div>`).join("");
     html+=`</div>`;
@@ -2558,6 +2648,99 @@ function goToDash(){
 const CATS=[{id:"all",label:"All",emoji:"🍽️"},{id:"rice",label:"Rice",emoji:"🍛"},{id:"curry",label:"Curries",emoji:"🍖"},{id:"bread",label:"Bread",emoji:"🫓"},{id:"dessert",label:"Desserts",emoji:"🍮"},{id:"drinks",label:"Drinks",emoji:"🥤"},{id:"snacks",label:"Snacks",emoji:"🥟"}];
 let currentCat="all", currentSellerFilter="all", favorites=DB.get("hb_favs")||[];
 
+/* ================================================================
+   REAL-TIME DISTANCE TRACKING
+   - Starts watchPosition when home page becomes active
+   - Updates seller/food distances live as user moves
+   - Stops watching when user leaves home page
+================================================================ */
+let _watchId = null;
+let _lastTrackedLat = null;
+let _lastTrackedLon = null;
+const MIN_MOVE_METERS = 50; // only update if moved > 50m (reduces re-renders)
+
+function startRealtimeTracking(){
+  if(!navigator.geolocation) return;
+  // Don't start if already watching
+  if(_watchId !== null) return;
+  _watchId = navigator.geolocation.watchPosition(
+    function(pos){
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      // Only update if moved enough
+      if(_lastTrackedLat !== null){
+        const moved = haversine(_lastTrackedLat, _lastTrackedLon, lat, lon) * 1000;
+        if(moved < MIN_MOVE_METERS) return;
+      }
+      _lastTrackedLat = lat;
+      _lastTrackedLon = lon;
+      // Save to location cache
+      const prev = DB.get(LOC_KEY) || {};
+      DB.set(LOC_KEY, {...prev, lat, lon, ts: Date.now()});
+      // Update distmap and re-render distances
+      updateSellerDistMap();
+      updateDistanceBadges();
+      updateCartDistances();
+    },
+    function(err){ /* silent — user may have denied */ },
+    {enableHighAccuracy: true, maximumAge: 10000, timeout: 15000}
+  );
+  setLiveTrackingIndicator(true);
+}
+
+function stopRealtimeTracking(){
+  if(_watchId !== null){
+    navigator.geolocation.clearWatch(_watchId);
+    _watchId = null;
+  }
+  setLiveTrackingIndicator(false);
+}
+
+function setLiveTrackingIndicator(active){
+  const indicator = document.getElementById("liveTrackIndicator");
+  if(indicator) indicator.style.display = active ? "flex" : "none";
+}
+
+/* Update only the distance badges on seller cards — no full re-render */
+function updateDistanceBadges(){
+  const sellers = getUsers().filter(u => u.role === "seller");
+  sellers.forEach(s => {
+    const d = sellerDist(s);
+    const distEl = document.getElementById("scard-dist-"+s.id);
+    if(distEl){
+      if(d !== null){
+        distEl.innerHTML = `<i class="fa-solid fa-location-dot" style="font-size:.62rem;"></i>&nbsp;${fmtDist(d)}`;
+        distEl.style.cssText = "display:inline-flex;align-items:center;gap:3px;background:rgba(255,90,31,.1);color:var(--p);font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:var(--rpill);";
+      } else {
+        distEl.style.display = "none";
+      }
+    }
+    // Update food card distance tags
+    document.querySelectorAll(".fc-dist-"+s.id).forEach(el=>{
+      if(d !== null){
+        el.innerHTML = `<i class="fa-solid fa-location-dot" style="font-size:.6rem;"></i>${fmtDist(d)}`;
+        el.style.display = "flex";
+      } else {
+        el.style.display = "none";
+      }
+    });
+  });
+  const sub = document.getElementById("sellersSub");
+  if(sub && getUserLoc()) sub.textContent = "Sorted by distance from your live location";
+}
+
+/* Update distance shown in cart drawer */
+function updateCartDistances(){
+  const sellers = getUsers().filter(u => u.role === "seller");
+  sellers.forEach(s => {
+    const d = sellerDist(s);
+    const el = document.getElementById("cart-dist-"+s.id);
+    if(el) el.innerHTML = d !== null
+      ? `<i class="fa-solid fa-location-dot" style="color:var(--p);font-size:.65rem;"></i> ${fmtDist(d)}`
+      : "";
+  });
+}
+
 function initHome(){
   showNavbar();
   updateNavAuth();
@@ -2567,6 +2750,12 @@ function initHome(){
   renderPublicMenu();
   renderSellerFilter();
   updateHeroStats();
+  // Start real-time tracking if GPS already allowed
+  if(navigator.permissions){
+    navigator.permissions.query({name:"geolocation"}).then(function(r){
+      if(r.state==="granted") startRealtimeTracking();
+    }).catch(()=>{});
+  }
 }
 
 function updateHeroStats(){
@@ -2611,7 +2800,7 @@ function getUserLoc(){
 /* Returns distance in km to a seller, or null if no user loc or seller has no coords */
 function sellerDist(seller){
   const u=getUserLoc();
-  if(!u||!seller.lat||!seller.lon)return null;
+  if(!u||typeof seller.lat!=="number"||typeof seller.lon!=="number")return null;
   return haversine(u.lat,u.lon,seller.lat,seller.lon);
 }
 const NEARBY_KM=10; // sellers within 10km = "nearby"
@@ -2646,7 +2835,7 @@ function renderSellers(){
   const h2=document.getElementById("sellersHeading");
   const sub=document.getElementById("sellersSub");
   if(h2)h2.textContent=isFiltered?"Nearby Home Kitchens":"Our Home Kitchens";
-  if(sub)sub.textContent=isFiltered?`Sellers within ${NEARBY_KM}km of your location`:"Real home chefs delivering authentic flavours";
+  if(sub)sub.textContent=isFiltered?`Sellers within ${NEARBY_KM} km of your location`:"Real home chefs delivering authentic flavours";
 
   if(!displayed.length){
     grid.innerHTML=`<div class="empty-st" style="grid-column:1/-1;">
@@ -2721,6 +2910,10 @@ function showAllSellers(){
 
 function buildSellerCard(s, distBadge, items, delivered){
   const av=s.kitchen?s.kitchen.charAt(0):s.name.charAt(0);
+  const dist=sellerDist(s);
+  const distBadgeHtml=dist!==null
+    ?`<span id="scard-dist-${s.id}" style="display:inline-flex;align-items:center;gap:3px;background:rgba(255,90,31,.1);color:var(--p);font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:var(--rpill);"><i class="fa-solid fa-location-dot" style="font-size:.62rem;"></i>&nbsp;${fmtDist(dist)}</span>`
+    :`<span id="scard-dist-${s.id}" style="display:none;"></span>`;
   return `<div class="seller-card">
     <div class="sc-banner" onclick="openSellerDetail(${s.id})" style="cursor:pointer;">
       <div class="sc-banner-overlay"></div>
@@ -2734,7 +2927,7 @@ function buildSellerCard(s, distBadge, items, delivered){
         <span><i class="fa-solid fa-motorcycle"></i> 30–45 min</span>
         <span><i class="fa-solid fa-receipt"></i> ${delivered} delivered</span>
       </div>
-      <div class="sc-dist">${distBadge}</div>
+      <div class="sc-dist">${distBadgeHtml}</div>
       <div class="sc-tags">${items.slice(0,3).map(i=>`<span class="sc-tag">${i.emoji} ${i.name}</span>`).join("")}</div>
       <div class="sc-spacer"></div>
       <div class="sc-actions">
@@ -2816,10 +3009,10 @@ function renderPublicMenu(){
     const isFav=favorites.includes(item.id);
     const dist=sellerDistMap[item.sid];
     const distTag=dist!==null
-      ?`<span style="font-size:.68rem;font-weight:700;color:var(--p);display:flex;align-items:center;gap:3px;margin-bottom:3px;"><i class="fa-solid fa-location-dot" style="font-size:.6rem;"></i>${fmtDist(dist)}</span>`
-      :"";
+      ?`<span class="fc-dist-${item.sid}" style="font-size:.68rem;font-weight:700;color:var(--p);display:flex;align-items:center;gap:3px;margin-bottom:3px;"><i class="fa-solid fa-location-dot" style="font-size:.6rem;"></i>${fmtDist(dist)}</span>`
+      :`<span class="fc-dist-${item.sid}" style="display:none;font-size:.68rem;font-weight:700;color:var(--p);align-items:center;gap:3px;margin-bottom:3px;"></span>`;
     return `<div class="food-card" onclick="openFoodDetail(${item.id})">
-      <div class="fc-img"><span style="font-size:3.5rem;">${item.emoji||"🍽️"}</span>
+      <div class="fc-img">${getItemImg(item)?`<img src="${getItemImg(item)}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;"/>`:`<span style="font-size:3.5rem;">${item.emoji||"🍽️"}</span>`}
         <div class="fc-fav${isFav?" active":""}" onclick="toggleFav(event,${item.id})" title="Favourite"><i class="fa-${isFav?"solid":"regular"} fa-heart"></i></div>
       </div>
       <div class="fc-body">
@@ -2875,7 +3068,7 @@ function addToCart(id, skipMenuRender){
   if(!item)return;
   const ex=cart.find(i=>i.id===id);
   if(ex)ex.qty++;
-  else cart.push({id:item.id,name:item.name,price:item.price,emoji:item.emoji||"🍽️",qty:1,sid:item.sid,seller:item.seller||"Home Kitchen"});
+  else cart.push({id:item.id,name:item.name,price:item.price,emoji:item.emoji||"🍽️",img:getItemImg(item),qty:1,sid:item.sid,seller:item.seller||"Home Kitchen"});
   saveCart();updateCartBadge();renderCart();
   if(!skipMenuRender)renderPublicMenu();
   toast(`✅ ${item.name} added!`,"green");
@@ -2905,12 +3098,17 @@ function renderCart(){
   }
   sids.forEach(sid=>{
     const sitems=cart.filter(i=>i.sid===sid);
+    const seller=getUsers().find(u=>u.id===sid);
+    const dist=seller?sellerDist(seller):null;
     const label=document.createElement("div");label.className="cart-group-label";
-    label.innerHTML=`<i class="fa-solid fa-store"></i>${sitems[0].seller}`;
+    const distHtml=dist!==null
+      ?`<span id="cart-dist-${sid}" style="margin-left:auto;font-size:.7rem;font-weight:600;color:var(--p);display:inline-flex;align-items:center;gap:3px;"><i class="fa-solid fa-location-dot" style="font-size:.65rem;"></i>${fmtDist(dist)}</span>`
+      :`<span id="cart-dist-${sid}" style="margin-left:auto;font-size:.7rem;font-weight:600;color:var(--muted);display:none;"></span>`;
+    label.innerHTML=`<i class="fa-solid fa-store"></i>${sitems[0].seller}${distHtml}`;
     frag.appendChild(label);
     sitems.forEach(item=>{
       const div=document.createElement("div");div.className="ci";
-      div.innerHTML=`<div class="ci-emoji">${item.emoji}</div>
+      div.innerHTML=`<div class="ci-emoji">${item.img?`<img src="${item.img}" alt="${item.name}" style="width:40px;height:40px;object-fit:cover;border-radius:var(--r8);"/>`:(item.emoji||"🍽️")}</div>
         <div class="ci-info"><strong>${item.name}</strong><small>৳${item.price} each</small></div>
         <div class="ci-ctrl">
           <button class="cq-btn" onclick="chgQty(${item.id},-1)">−</button>
@@ -3340,8 +3538,13 @@ function renderSellerMenu(){
   if(sv)items=items.filter(i=>i.name.toLowerCase().includes(sv));
   const list=document.getElementById("sMenuList");
   if(!list)return;
-  list.innerHTML=items.length?items.map(item=>`<div class="mi-card">
-    <div class="mi-emoji">${item.emoji||"🍽️"}</div>
+  list.innerHTML=items.length?items.map(item=>{
+    const imgSrc=getItemImg(item);
+    const imgEl=imgSrc
+      ?`<div class="mi-emoji" style="overflow:hidden;border-radius:var(--r8);"><img src="${imgSrc}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;"/></div>`
+      :`<div class="mi-emoji">${item.emoji||"🍽️"}</div>`;
+    return `<div class="mi-card">
+    ${imgEl}
     <div class="mi-info"><h4>${item.name}</h4><p>${item.desc}</p>
       <div class="mi-meta"><span class="badge badge-orange" style="font-size:.68rem;">${item.tag||""}</span><span class="mi-price">${fmt(item.price)}</span><span class="badge ${item.avail?"badge-green":"badge-gray"}">${item.avail?"✅ Live":"⏸ Hidden"}</span></div>
     </div>
@@ -3349,14 +3552,90 @@ function renderSellerMenu(){
       <button class="btn btn-ghost btn-sm" onclick="openMenuItemModal(${item.id})"><i class="fa-solid fa-pen"></i></button>
       <button class="btn btn-danger btn-sm" onclick="delMenuItem(${item.id})"><i class="fa-solid fa-trash"></i></button>
     </div>
-  </div>`).join(""):`<div class="empty-st"><i class="fa-solid fa-utensils"></i><p>No items yet. Add your first dish!</p></div>`;
+  </div>`;}).join(""):`<div class="empty-st"><i class="fa-solid fa-utensils"></i><p>No items yet. Add your first dish!</p></div>`;
 }
 
 let _editMiId=null;
+/* ================================================================
+   MENU ITEM IMAGE UPLOAD
+================================================================ */
+let _miImgData = ""; // stores base64 or empty
+
+function handleImgFile(input){
+  const file=input.files[0];
+  if(!file)return;
+  // Max 2MB
+  if(file.size>2*1024*1024){toast("Image too large. Max 2MB.","red");return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    _miImgData=e.target.result;
+    setMiImgPreview(e.target.result);
+    document.getElementById("miImgUrl").value=""; // clear URL if file chosen
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleImgDrop(e){
+  e.preventDefault();
+  const wrap=document.getElementById("miImgWrap");
+  wrap.style.borderColor="var(--border)";
+  wrap.style.background="var(--light)";
+  const file=e.dataTransfer?.files?.[0];
+  if(!file||!file.type.startsWith("image/"))return;
+  if(file.size>2*1024*1024){toast("Image too large. Max 2MB.","red");return;}
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    _miImgData=ev.target.result;
+    setMiImgPreview(ev.target.result);
+    document.getElementById("miImgUrl").value="";
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewImgUrl(url){
+  if(!url.trim()){if(!_miImgData)setMiImgPreview("");return;}
+  _miImgData=""; // URL takes over, clear base64
+  setMiImgPreview(url.trim());
+}
+
+function setMiImgPreview(src){
+  const preview=document.getElementById("miImgPreview");
+  const placeholder=document.getElementById("miImgPlaceholder");
+  const removeBtn=document.getElementById("miImgRemove");
+  if(!preview||!placeholder||!removeBtn)return;
+  if(src){
+    preview.src=src;
+    preview.style.display="block";
+    placeholder.style.display="none";
+    removeBtn.style.display="flex";
+  }else{
+    preview.src="";
+    preview.style.display="none";
+    placeholder.style.display="flex";
+    removeBtn.style.display="none";
+  }
+}
+
+function removeMenuImg(e){
+  e.stopPropagation();
+  _miImgData="";
+  setMiImgPreview("");
+  document.getElementById("miImgUrl").value="";
+  document.getElementById("miImgFile").value="";
+}
+
+/* helper: get best display image for a menu item */
+function getItemImg(item){
+  return item.img||item.imgUrl||"";
+}
+
 function openMenuItemModal(editId){
   _editMiId=editId||null;
   document.getElementById("miModalTitle").textContent=editId?"Edit Item":"Add New Item";
   document.getElementById("miId").value=editId||"";
+  // Reset image state
+  _miImgData="";
+  setMiImgPreview("");
   if(editId){
     const item=getMenu().find(i=>i.id===editId);
     if(item){
@@ -3367,11 +3646,16 @@ function openMenuItemModal(editId){
       document.getElementById("miEmoji").value=item.emoji||"";
       document.getElementById("miTag").value=item.tag||"";
       document.getElementById("miAvail").checked=item.avail!==false;
+      // Load existing image
+      const imgSrc=item.img||item.imgUrl||"";
+      if(imgSrc){ _miImgData=imgSrc; setMiImgPreview(imgSrc); }
+      if(item.imgUrl&&!item.img) document.getElementById("miImgUrl").value=item.imgUrl;
     }
   }else{
     document.getElementById("miForm").reset();
     document.getElementById("miId").value="";
     document.getElementById("miAvail").checked=true;
+    document.getElementById("miImgUrl").value="";
   }
   openModal("menuItemModal");
 }
@@ -3380,13 +3664,26 @@ function saveMiForm(e){
   e.preventDefault();
   const s=getSession();
   const editId=document.getElementById("miId").value;
-  const data={name:document.getElementById("miName").value.trim(),desc:document.getElementById("miDesc").value.trim(),price:parseInt(document.getElementById("miPrice").value),cat:document.getElementById("miCat").value,emoji:document.getElementById("miEmoji").value.trim()||"🍽️",tag:document.getElementById("miTag").value.trim(),avail:document.getElementById("miAvail").checked,sid:s.id,seller:s.kitchen||s.name};
+  const imgUrl=document.getElementById("miImgUrl").value.trim();
+  const data={
+    name:document.getElementById("miName").value.trim(),
+    desc:document.getElementById("miDesc").value.trim(),
+    price:parseInt(document.getElementById("miPrice").value),
+    cat:document.getElementById("miCat").value,
+    emoji:document.getElementById("miEmoji").value.trim()||"🍽️",
+    tag:document.getElementById("miTag").value.trim(),
+    avail:document.getElementById("miAvail").checked,
+    sid:s.id,seller:s.kitchen||s.name,
+    // Store base64 image or URL (base64 takes priority)
+    img:_miImgData||"",
+    imgUrl:_miImgData?"":imgUrl
+  };
   if(editId){updateMenuItem(parseInt(editId),data);toast("✅ Item updated! Live on store.","green");}
   else{addMenuItem(data);toast("✅ New item added to store!","green");}
   closeModal("menuItemModal");
   renderSellerMenu();
   loadSellerOverview(s.id);
-  renderPublicMenu(); // update store live
+  renderPublicMenu();
 }
 
 function delMenuItem(id){
@@ -3632,9 +3929,9 @@ function renderBuyerFavs(){
       ${favItems.map(item=>{
         const inCart=cart.find(c=>c.id===item.id);
         return `<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1);transition:all .2s;" onmouseover="this.style.borderColor='var(--p)';this.style.boxShadow='var(--sh2)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='var(--sh1)'">
-          <div style="height:120px;background:linear-gradient(135deg,#fff5ef,var(--light));display:flex;align-items:center;justify-content:center;font-size:3.2rem;position:relative;">
-            ${item.emoji||"🍽️"}
-            <button onclick="removeFav(${item.id})" title="Remove from favourites" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:#fee2e2;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.78rem;color:var(--red);transition:all .2s;" onmouseover="this.style.background='var(--red)';this.style.color='#fff'" onmouseout="this.style.background='#fee2e2';this.style.color='var(--red)'"><i class="fa-solid fa-heart-crack"></i></button>
+          <div style="height:130px;background:linear-gradient(135deg,#fff5ef,var(--light));display:flex;align-items:center;justify-content:center;font-size:3.2rem;position:relative;overflow:hidden;">
+            ${getItemImg(item)?`<img src="${getItemImg(item)}" alt="${item.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/>`:(item.emoji||"🍽️")}
+            <button onclick="removeFav(${item.id})" title="Remove from favourites" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.45);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.78rem;color:#fff;z-index:2;" onmouseover="this.style.background='var(--red)'" onmouseout="this.style.background='rgba(0,0,0,.45)'"><i class="fa-solid fa-heart-crack"></i></button>
           </div>
           <div style="padding:12px 14px 14px;">
             <div style="font-size:.72rem;color:var(--p);font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:4px;"><i class="fa-solid fa-store"></i>${item.seller||"Home Kitchen"}</div>
@@ -3828,8 +4125,17 @@ function openFoodDetail(id){
   const rating=getItemRating(item.name);
   const dist=sellerDistMap?.[item.sid]||null;
 
-  // Hero
-  document.getElementById("fdEmoji").textContent=item.emoji||"🍽️";
+  // Hero — show real image if available, else emoji
+  const heroImg=document.getElementById("fdHeroImg");
+  const fdEmoji=document.getElementById("fdEmoji");
+  const imgSrc=getItemImg(item);
+  if(imgSrc&&heroImg){
+    heroImg.src=imgSrc;heroImg.style.display="block";
+    if(fdEmoji)fdEmoji.style.display="none";
+  }else{
+    if(heroImg)heroImg.style.display="none";
+    if(fdEmoji){fdEmoji.style.display="block";fdEmoji.textContent=item.emoji||"🍽️";}
+  }
 
   // Fav button
   document.getElementById("fdFavBtn").innerHTML=
@@ -3965,7 +4271,7 @@ function openSellerDetail(sid){
     :`<span class="badge badge-gray">New Seller</span>`;
 
   // Address + desc
-  document.getElementById("sdAddr").innerHTML=`<i class="fa-solid fa-location-dot" style="color:var(--p);"></i>${seller.addr||"Dhaka, Bangladesh"}`;
+  document.getElementById("sdAddr").innerHTML=`<i class="fa-solid fa-location-dot" style="color:var(--p);"></i>${seller.addr||"Bangladesh"}`;
   document.getElementById("sdDesc").textContent=seller.desc||"Authentic homemade food crafted with love.";
 
   // Stats
@@ -3992,15 +4298,16 @@ function openSellerDetail(sid){
   document.getElementById("sdMenuItems").innerHTML=menu.slice(0,5).map(item=>{
     const inCart=cart.find(c=>c.id===item.id);
     const itemRating=getItemRating(item.name);
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:border-color .2s;" onclick="closeModal('sellerDetailModal');setTimeout(()=>openFoodDetail(${item.id}),200);">
-      <div style="width:42px;height:42px;background:var(--light);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">${item.emoji||"🍽️"}</div>
+    const imgSrc=getItemImg(item);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:border-color .2s;" onclick="closeModal('sellerDetailModal');setTimeout(()=>openFoodDetail(${item.id}),200);" onmouseover="this.style.borderColor='var(--p)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:46px;height:46px;background:var(--light);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;overflow:hidden;">${imgSrc?`<img src="${imgSrc}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;"/>`:(item.emoji||"🍽️")}</div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:.88rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
         ${itemRating?`<div style="font-size:.72rem;color:#f59e0b;">${"★".repeat(Math.round(itemRating.avg))} <span style="color:var(--muted)">${itemRating.avg} (${itemRating.count})</span></div>`:`<div style="font-size:.72rem;color:var(--muted);">No ratings yet</div>`}
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
         <span style="font-size:.95rem;font-weight:800;color:var(--p);">${fmt(item.price)}</span>
-        <button onclick="event.stopPropagation();${inCart?`chgQty(${item.id},1)`:`addToCart(${item.id})`};renderSellerDetailMenu(${sid})" style="width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;"><i class="fa-solid ${inCart?"fa-plus":"fa-plus"}"></i></button>
+        <button onclick="event.stopPropagation();${inCart?`chgQty(${item.id},1)`:`addToCart(${item.id})`};renderSellerDetailMenu(${sid})" style="width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;"><i class="fa-solid fa-plus"></i></button>
       </div>
     </div>`;
   }).join("")||`<div style="text-align:center;padding:18px;color:var(--muted);font-size:.87rem;">No menu items yet</div>`;
@@ -4009,15 +4316,15 @@ function openSellerDetail(sid){
 }
 
 function renderSellerDetailMenu(sid){
-  // Re-render just the menu items inside the open seller detail
   const menu=getMenuBySeller(sid).filter(i=>i.avail!==false);
   const container=document.getElementById("sdMenuItems");
   if(!container)return;
   container.innerHTML=menu.slice(0,5).map(item=>{
     const inCart=cart.find(c=>c.id===item.id);
     const itemRating=getItemRating(item.name);
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:border-color .2s;" onclick="closeModal('sellerDetailModal');setTimeout(()=>openFoodDetail(${item.id}),200);">
-      <div style="width:42px;height:42px;background:var(--light);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">${item.emoji||"🍽️"}</div>
+    const imgSrc=getItemImg(item);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:border-color .2s;" onclick="closeModal('sellerDetailModal');setTimeout(()=>openFoodDetail(${item.id}),200);" onmouseover="this.style.borderColor='var(--p)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:46px;height:46px;background:var(--light);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;overflow:hidden;">${imgSrc?`<img src="${imgSrc}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;"/>`:(item.emoji||"🍽️")}</div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:.88rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
         ${itemRating?`<div style="font-size:.72rem;color:#f59e0b;">${"★".repeat(Math.round(itemRating.avg))} <span style="color:var(--muted)">${itemRating.avg} (${itemRating.count})</span></div>`:`<div style="font-size:.72rem;color:var(--muted);">No ratings yet</div>`}
@@ -4042,7 +4349,7 @@ function openContactSeller(sid){
   const title = document.getElementById("contactSellerTitle");
   const info  = document.getElementById("contactSellerInfo");
   if(title) title.innerHTML = `<i class="fa-solid fa-envelope" style="color:var(--p);margin-right:6px;"></i>Message ${seller.kitchen||seller.name}`;
-  if(info)  info.innerHTML  = `<i class="fa-solid fa-store" style="color:var(--p);margin-right:6px;"></i><strong>${seller.kitchen||seller.name}</strong> &nbsp;·&nbsp; ${seller.addr||"Dhaka"}`;
+  if(info)  info.innerHTML  = `<i class="fa-solid fa-store" style="color:var(--p);margin-right:6px;"></i><strong>${seller.kitchen||seller.name}</strong> &nbsp;·&nbsp; ${seller.addr||"Bangladesh"}`;
   // Pre-fill name/phone if user is logged in
   const s = getSession();
   const nameEl  = document.getElementById("csMsgName");
@@ -4271,6 +4578,7 @@ function saveSellerProfile(){
   if(!kitchen){toast("Kitchen name cannot be empty","red");return;}
   if(!name){toast("Name cannot be empty","red");return;}
 
+  const oldAddr=users[idx].addr; // capture BEFORE overwriting
   users[idx].kitchen=kitchen;
   users[idx].name=name;
   users[idx].phone=phone;
@@ -4292,18 +4600,45 @@ function saveSellerProfile(){
   document.getElementById("dsTopKitchen").textContent=kitchen;
   document.getElementById("sProfileKitchen").textContent=kitchen;
 
-  // Geocode new address in background
-  if(addr&&addr!==users[idx].addr){
+  // Geocode address — always geocode when address is present
+  if(addr){
+    const btn=document.getElementById("saveSellerProfileBtn");
+    if(btn){btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Locating address…';btn.disabled=true;}
     const geoUrl="https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Bangladesh")+"&format=json&limit=1&countrycodes=bd";
     fetch(geoUrl,{headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
       .then(r=>r.json()).then(data=>{
+        if(btn){btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i>Save Changes';btn.disabled=false;}
         if(data&&data[0]){
           const us=getUsers();const i=us.findIndex(u=>u.id===s.id);
-          if(i>-1){us[i].lat=parseFloat(data[0].lat);us[i].lon=parseFloat(data[0].lon);setUsers(us);}
+          if(i>-1){
+            us[i].lat=parseFloat(data[0].lat);
+            us[i].lon=parseFloat(data[0].lon);
+            setUsers(us);
+            // Rebuild distance map with updated seller coords
+            updateSellerDistMap();
+            // If home page is active, fully re-render so seller is re-sorted by new location
+            if(document.getElementById("page-home").classList.contains("active")){
+              renderSellers();
+              renderPublicMenu();
+            }
+            // Always update live distance badges and cart distances
+            updateDistanceBadges();
+            updateCartDistances();
+            toast("✅ Profile saved! 📍 Location updated: "+addr,"green",3500);
+          }
+        } else {
+          // Geocoding failed — clear old stale coords so distance doesn't mislead
+          const us=getUsers();const i=us.findIndex(u=>u.id===s.id);
+          if(i>-1){us[i].lat=null;us[i].lon=null;setUsers(us);}
+          toast("✅ Profile saved. ⚠️ Address not found on map — try a more specific address (e.g. Mirpur 10, Dhaka)","blue",5000);
         }
-      }).catch(()=>{});
+      }).catch(()=>{
+        if(btn){btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i>Save Changes';btn.disabled=false;}
+        toast("✅ Profile saved! (Location update failed — check internet connection)","blue",3500);
+      });
+  } else {
+    toast("✅ Profile saved!","green");
   }
-  toast("✅ Profile saved!","green");
   updateNavAuth();
 }
 
@@ -4365,13 +4700,55 @@ document.addEventListener("DOMContentLoaded",function(){
   cart=DB.get("hb_cart")||[];
   updateCartBadge();
   renderCart();
-  initHome();
   const s=getSession();
   if(s){updateNavAuth();}
-  initLocation();
-  // Initialize desktop nav indicator after layout settles
+  // Initialize desktop nav indicator
   setTimeout(function(){ updateDesktopNav("page-home"); }, 50);
+  // Location-first boot: try to get location before rendering home
+  // so first render already has nearby sellers/food
+  initLocationFirst(function(){
+    initHome();
+  });
 });
+
+/* Boot location then render home */
+function initLocationFirst(onDone){
+  const cached = DB.get(LOC_KEY);
+  // Fresh cached location → render with it immediately, no splash
+  if(cached && cached.label && cached.ts && (Date.now()-cached.ts < LOC_MAX_MS)){
+    setLocLabel(cached.label, true);
+    onDone();
+    return;
+  }
+  // Already dismissed splash before → render without location
+  if(DB.get("hb_loc_banner_dismissed")){
+    setLocLabel("Set Location", false);
+    onDone();
+    return;
+  }
+  // Check GPS permission state
+  if(navigator.permissions){
+    navigator.permissions.query({name:"geolocation"}).then(function(r){
+      if(r.state==="granted"){
+        // GPS already allowed → detect silently, show home immediately
+        setLocLabel("Detecting…", false);
+        onDone();
+        detectGPS(false); // will re-render home when it resolves
+      } else {
+        // Not granted yet → show splash, render home behind it
+        onDone(); // render home (will show all sellers for now)
+        showLocationSplash();
+      }
+    }).catch(function(){
+      onDone();
+      showLocationSplash();
+    });
+  } else {
+    // No Permissions API (some mobile browsers) → just show splash
+    onDone();
+    showLocationSplash();
+  }
+}
 
 /* ================================================================
    LOCATION
@@ -4384,18 +4761,30 @@ document.addEventListener("DOMContentLoaded",function(){
 ================================================================ */
 const LOC_KEY    = "hb_location";
 const LOC_MAX_MS = 30 * 60 * 1000;
-/* Quick-select Dhaka areas with real coordinates */
+/* Quick-select areas across Bangladesh with real coordinates */
 const LOC_AREAS = [
-  {name:"Mirpur",       lat:23.8103, lon:90.3649},
-  {name:"Dhanmondi",    lat:23.7461, lon:90.3742},
-  {name:"Gulshan",      lat:23.7808, lon:90.4150},
-  {name:"Uttara",       lat:23.8760, lon:90.3795},
-  {name:"Mohammadpur",  lat:23.7644, lon:90.3534},
-  {name:"Banani",       lat:23.7937, lon:90.4043},
-  {name:"Bashundhara",  lat:23.8141, lon:90.4239},
-  {name:"Old Dhaka",    lat:23.7104, lon:90.4074},
-  {name:"Tejgaon",      lat:23.7589, lon:90.3943},
-  {name:"Motijheel",    lat:23.7330, lon:90.4192}
+  // Dhaka areas
+  {name:"Mirpur, Dhaka",       lat:23.8103, lon:90.3649},
+  {name:"Dhanmondi, Dhaka",    lat:23.7461, lon:90.3742},
+  {name:"Gulshan, Dhaka",      lat:23.7808, lon:90.4150},
+  {name:"Uttara, Dhaka",       lat:23.8760, lon:90.3795},
+  {name:"Mohammadpur, Dhaka",  lat:23.7644, lon:90.3534},
+  {name:"Banani, Dhaka",       lat:23.7937, lon:90.4043},
+  {name:"Wari, Old Dhaka",     lat:23.7104, lon:90.4074},
+  {name:"Motijheel, Dhaka",    lat:23.7330, lon:90.4192},
+  // Major cities
+  {name:"Chittagong",          lat:22.3569, lon:91.7832},
+  {name:"Sylhet",              lat:24.8949, lon:91.8687},
+  {name:"Rajshahi",            lat:24.3745, lon:88.6042},
+  {name:"Khulna",              lat:22.8456, lon:89.5403},
+  {name:"Barisal",             lat:22.7010, lon:90.3535},
+  {name:"Rangpur",             lat:25.7439, lon:89.2752},
+  {name:"Mymensingh",          lat:24.7471, lon:90.4203},
+  {name:"Comilla",             lat:23.4607, lon:91.1809},
+  {name:"Narayanganj",         lat:23.6238, lon:90.4996},
+  {name:"Cox's Bazar",         lat:21.4272, lon:92.0058},
+  {name:"Gazipur",             lat:23.9999, lon:90.4203},
+  {name:"Jessore",             lat:23.1664, lon:89.2121},
 ];
 
 function initLocation(){
@@ -4413,6 +4802,114 @@ function initLocation(){
   }
 }
 
+/* ── Location SPLASH (full-screen, first-time visitors) ── */
+function showLocationSplash(){
+  const splash = document.getElementById("locSplash");
+  if(splash){ splash.style.display="flex"; document.body.style.overflow="hidden"; }
+}
+
+function hideLocationSplash(){
+  const splash = document.getElementById("locSplash");
+  if(!splash) return;
+  splash.style.opacity="0"; splash.style.transition="opacity .4s";
+  setTimeout(function(){ splash.style.display="none"; splash.style.opacity=""; document.body.style.overflow=""; }, 400);
+}
+
+function splashUseGPS(){
+  const btn = document.getElementById("splashGpsBtn");
+  if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Detecting…';
+  const title=document.getElementById("locSplashTitle"), sub=document.getElementById("locSplashSub");
+  if(title) title.textContent="Finding your location…";
+  if(sub)   sub.textContent="Allow location access when your browser asks.";
+  if(!navigator.geolocation){ hideLocationSplash(); openLocModal(); return; }
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      reverseGeocode(pos.coords.latitude, pos.coords.longitude, function(label){
+        DB.set(LOC_KEY,{label,lat:pos.coords.latitude,lon:pos.coords.longitude,ts:Date.now()});
+        _lastTrackedLat=pos.coords.latitude; _lastTrackedLon=pos.coords.longitude;
+        setLocLabel(label, true);
+        const icon=document.getElementById("locSplashIcon");
+        if(icon)  icon.textContent="✅";
+        if(title) title.textContent=label;
+        if(sub)   sub.textContent="Great! Showing nearby home kitchens.";
+        if(btn)   btn.innerHTML='<i class="fa-solid fa-check"></i> Location Set!';
+        setTimeout(function(){
+          hideLocationSplash();
+          updateSellerDistMap(); renderSellers(); renderPublicMenu(); startRealtimeTracking();
+          toast("📍 "+label,"green",2000);
+        }, 900);
+      });
+    },
+    function(){
+      // GPS denied — show inline search inside splash
+      if(btn) btn.innerHTML='<i class="fa-solid fa-crosshairs"></i>Use My Location';
+      if(title) title.textContent="Search your area";
+      if(sub)   sub.textContent="GPS was blocked. Type your city or area below.";
+      const icon=document.getElementById("locSplashIcon");
+      if(icon) icon.textContent="🔍";
+      const btnsEl=document.getElementById("locSplashBtns");
+      if(btnsEl) btnsEl.innerHTML=`
+        <div style="display:flex;gap:8px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:var(--r12);padding:10px 14px;align-items:center;">
+          <i class="fa-solid fa-magnifying-glass" style="color:rgba(255,255,255,.5);flex-shrink:0;"></i>
+          <input type="text" id="splashSearchInput" placeholder="Type your city or area…"
+            style="flex:1;background:none;border:none;outline:none;font-size:.9rem;color:#fff;font-family:var(--font);"
+            oninput="splashSearchType(this.value)" onkeydown="if(event.key==='Enter')splashDoSearch()"/>
+        </div>
+        <div id="splashResults" style="max-height:220px;overflow-y:auto;border-radius:var(--r12);background:rgba(255,255,255,.05);text-align:left;"></div>
+        <button onclick="splashSkip()" style="background:none;color:rgba(255,255,255,.4);border:none;padding:8px;font-size:.83rem;cursor:pointer;font-family:var(--font);">Skip — browse all food</button>`;
+      setTimeout(function(){ document.getElementById("splashSearchInput")?.focus(); }, 100);
+    },
+    {enableHighAccuracy:true, timeout:12000, maximumAge:0}
+  );
+}
+
+let _splashT=null;
+function splashSearchType(v){ clearTimeout(_splashT); if(v.trim()) _splashT=setTimeout(splashDoSearch,600); else document.getElementById("splashResults").innerHTML=""; }
+
+function splashDoSearch(){
+  const q=(document.getElementById("splashSearchInput")?.value||"").trim(); if(!q) return;
+  const res=document.getElementById("splashResults"); if(!res) return;
+  res.innerHTML='<div style="padding:12px;text-align:center;color:rgba(255,255,255,.45);font-size:.83rem;"><i class="fa-solid fa-spinner fa-spin"></i></div>';
+  fetch("https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(q)+"&format=json&limit=6&addressdetails=1&countrycodes=bd",
+    {headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
+    .then(r=>r.json()).then(function(data){
+      if(!data||!data.length){ res.innerHTML='<div style="padding:12px;text-align:center;color:rgba(255,255,255,.4);font-size:.83rem;">No results. Try a different name.</div>'; return; }
+      res.innerHTML=data.map(function(item){
+        var a=item.address||{}, area=a.neighbourhood||a.suburb||a.village||a.town||"", city=a.city||a.city_district||a.state||"";
+        var label=(area&&city)?(area+", "+city):area||city||(item.display_name||"").split(",").slice(0,2).join(", ");
+        if(label.length>42) label=label.substring(0,40)+"…";
+        return '<div onclick="splashSetLocation(\''+label.replace(/'/g,"\\'")+'\','+item.lat+','+item.lon+')" style="padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer;display:flex;align-items:center;gap:10px;" onmouseover="this.style.background=\'rgba(255,255,255,.08)\'" onmouseout="this.style.background=\'none\'">'
+          +'<i class="fa-solid fa-location-dot" style="color:var(--p);flex-shrink:0;"></i>'
+          +'<div><div style="font-size:.87rem;font-weight:600;color:#fff;">'+label+'</div>'
+          +'<div style="font-size:.72rem;color:rgba(255,255,255,.4);">'+(item.display_name||"").split(",").slice(0,3).join(", ")+'</div></div></div>';
+      }).join("");
+    }).catch(function(){ res.innerHTML='<div style="padding:12px;text-align:center;color:rgba(255,255,255,.4);font-size:.83rem;">Search failed.</div>'; });
+}
+
+function splashSetLocation(label, lat, lon){
+  lat=parseFloat(lat); lon=parseFloat(lon);
+  DB.set(LOC_KEY,{label,lat,lon,ts:Date.now()});
+  _lastTrackedLat=lat; _lastTrackedLon=lon;
+  setLocLabel(label, true);
+  const title=document.getElementById("locSplashTitle"), sub=document.getElementById("locSplashSub"), icon=document.getElementById("locSplashIcon");
+  if(icon)  icon.textContent="✅";
+  if(title) title.textContent=label;
+  if(sub)   sub.textContent="Showing nearby home kitchens.";
+  setTimeout(function(){
+    hideLocationSplash();
+    updateSellerDistMap(); renderSellers(); renderPublicMenu();
+    toast("📍 "+label,"green",2000);
+  }, 700);
+}
+
+function splashSearchArea(){ hideLocationSplash(); openLocModal(); }
+function splashSkip(){ DB.set("hb_loc_banner_dismissed",true); hideLocationSplash(); }
+
+// Compat aliases
+function showLocationBanner(){ showLocationSplash(); }
+function dismissLocBanner(){ hideLocationSplash(); DB.set("hb_loc_banner_dismissed",true); }
+function tryGPSFromBanner(){ splashUseGPS(); }
+
 /* pill tap → always open modal */
 function requestLocation(){
   openLocModal();
@@ -4422,7 +4919,7 @@ function openLocModal(){
   const qa = document.getElementById("locQuickAreas");
   if(qa){
     qa.innerHTML = LOC_AREAS.map(function(a){
-      return '<button onclick="setManualLocation(\''+a.name+', Dhaka\','+a.lat+','+a.lon+')" style="padding:5px 12px;border-radius:var(--rpill);font-size:.78rem;font-weight:600;background:var(--light);border:1.5px solid var(--border);cursor:pointer;color:var(--text);font-family:var(--font);transition:all .2s;" onmouseover="this.style.borderColor=\'var(--p)\';this.style.color=\'var(--p)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">'+a.name+'</button>';
+      return '<button onclick="setManualLocation(\''+a.name+', Bangladesh\','+a.lat+','+a.lon+')" style="padding:5px 12px;border-radius:var(--rpill);font-size:.78rem;font-weight:600;background:var(--light);border:1.5px solid var(--border);cursor:pointer;color:var(--text);font-family:var(--font);transition:all .2s;" onmouseover="this.style.borderColor=\'var(--p)\';this.style.color=\'var(--p)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">'+a.name+'</button>';
     }).join("");
   }
   const inp=document.getElementById("locSearchInput");
@@ -4470,13 +4967,20 @@ function detectGPS(showErrors){
   setLocLoading();
   navigator.geolocation.getCurrentPosition(
     function(pos){
+      _lastTrackedLat=pos.coords.latitude;
+      _lastTrackedLon=pos.coords.longitude;
       reverseGeocode(pos.coords.latitude, pos.coords.longitude, function(label){
         DB.set(LOC_KEY,{label,lat:pos.coords.latitude,lon:pos.coords.longitude,ts:Date.now()});
         setLocLabel(label,true);
+        dismissLocBanner(); // hide banner once location is known
         toast("📍 "+label,"green",2000);
         if(document.getElementById("page-home").classList.contains("active")){
-          renderSellers();renderPublicMenu();
+          updateSellerDistMap();
+          renderSellers();
+          renderPublicMenu();
+          startRealtimeTracking();
         }
+        updateCartDistances();
       });
     },
     function(){
@@ -4553,14 +5057,26 @@ function showLocStatus(msg, color){
 function setManualLocation(label, lat, lon){
   if(label&&label.length>26) label=label.substring(0,24)+"…";
   DB.set(LOC_KEY,{label:label,lat:lat||null,lon:lon||null,ts:Date.now()});
+  // Update tracking state
+  if(lat&&lon){ _lastTrackedLat=lat; _lastTrackedLon=lon; }
   setLocLabel(label, true);
+  dismissLocBanner(); // hide the location prompt banner
   closeModal("locModal");
   toast("📍 "+label,"green",2200);
-  // Re-render home if visible so sellers/menu filter by new location
+  // Re-render home if visible
   if(document.getElementById("page-home").classList.contains("active")){
+    updateSellerDistMap();
     renderSellers();
     renderPublicMenu();
+    // Also try to start real-time GPS tracking from this point
+    if(navigator.permissions){
+      navigator.permissions.query({name:"geolocation"}).then(r=>{
+        if(r.state==="granted") startRealtimeTracking();
+      }).catch(()=>{});
+    }
   }
+  // Update distances in open cart if any
+  updateCartDistances();
 }
 
 /* ── UI helpers ──────────────────────────────────────────── */
