@@ -95,11 +95,24 @@ img{max-width:100%;display:block;}
 .divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:.8rem;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:10px 22px;border-radius:var(--rpill);font-weight:600;font-size:.85rem;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center;}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast{
+  position:fixed;bottom:80px;left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:var(--dark);color:#fff;
+  padding:10px 22px;border-radius:var(--rpill);
+  font-weight:600;font-size:.85rem;
+  z-index:9999;opacity:0;
+  transition:opacity .3s,transform .3s;
+  white-space:nowrap;max-width:90vw;text-align:center;
+  pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
 #toast.green{background:#166534;}
 #toast.red{background:#991b1b;}
 #toast.blue{background:#1e40af;}
+@media(max-width:768px){
+  #toast{bottom:72px;}
+}
 
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .3s;}
 .modal-bg.open{opacity:1;pointer-events:all;}
@@ -235,39 +248,33 @@ img{max-width:100%;display:block;}
 .nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .nav-icon-btn{
   width:38px;height:38px;
-  color:var(--text);
+  background:var(--light);color:var(--text);
   display:flex;align-items:center;justify-content:center;
   font-size:.9rem;transition:all .2s;
   position:relative;cursor:pointer;border:none;
-  overflow:hidden;
+  overflow:visible;
 }
 .nav-icon-btn::before{
   content:'';position:absolute;inset:0;
   background:var(--p);border-radius:50%;
   transform:scale(0);transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+  clip-path:circle(50% at 50% 50%);
 }
 .nav-icon-btn:hover::before{transform:scale(1);}
 .nav-icon-btn:hover i{color:#fff;position:relative;z-index:1;}
 .nav-icon-btn i{transition:color .2s;position:relative;z-index:1;}
-.nav-badge {
-	position: absolute;
-	top: 2px;
-	right: 0px;
-	min-width: 13px;
-	height: 13px;
-	background: var(--p);
-	color: #fff;
-	border-radius: 50%;
-	font-size: .4rem;
-	font-weight: 800;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 2px solid #fff;
-	z-index: 2;
-	transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+.nav-badge{
+  position:absolute;top:-5px;right:-5px;
+  min-width:18px;height:18px;
+  background:var(--p);color:#fff;border-radius:50%;
+  font-size:.62rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 3px;
+  border:2px solid #fff;z-index:10;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
 }
-.nav-badge.bump{transform:scale(1.4);}
+.nav-badge.bump{transform:scale(1.45);}
 
 /* User avatar dropdown */
 .user-btn{
@@ -1565,7 +1572,7 @@ img{max-width:100%;display:block;}
         <div class="auth-feat"><i class="fa-solid fa-check-circle"></i>30–45 min delivery</div>
         <div class="demo-hint" style="margin-top:24px;">
           <i class="fa-solid fa-circle-info"></i>
-          <span><strong>Demo:</strong><br/>🛒 Buyer: buyer@test.com / buyer123<br/>🍳 Seller 1: seller1@test.com / seller123<br/>🍳 Seller 2: seller2@test.com / seller234</span>
+          <span><strong>Demo:</strong><br/>🛒 Buyer: hello@homebite.com.bd / buyer123<br/>🍳 Seller 1: hello@homebite.com.bd / seller123<br/>🍳 Seller 2: hello@homebite.com.bd / seller234</span>
         </div>
       </div>
       <div class="auth-dec">🔑</div>
@@ -2332,8 +2339,19 @@ function fmt(n){return "৳"+n;}
 function genOID(){return "HB-"+new Date().getFullYear()+"-"+(Math.floor(Math.random()*9000)+1000);}
 function fmtDate(d){try{return new Date(d).toLocaleDateString("en-BD",{day:"2-digit",month:"short",year:"numeric"});}catch(e){return d||"";}}
 function statusBadge(s){const m={"Received":"badge-blue","Cooking":"badge-orange","Out for Delivery":"badge-purple","Delivered":"badge-green","Cancelled":"badge-red"};return `<span class="badge ${m[s]||"badge-gray"}">${s}</span>`;}
-let _toastT;
-function toast(msg,type="",ms=2800){const el=document.getElementById("toast");el.className="toast show"+(type?" "+type:"");el.innerHTML=msg;clearTimeout(_toastT);_toastT=setTimeout(()=>el.classList.remove("show"),ms);}
+let _toastT=null;
+function toast(msg,type="",ms=2800){
+  const el=document.getElementById("toast");
+  if(!el)return;
+  clearTimeout(_toastT);
+  el.innerHTML=msg;
+  el.className="show"+(type?" "+type:"");
+  _toastT=setTimeout(()=>{
+    el.classList.remove("show");
+    // Remove colour class after transition
+    setTimeout(()=>{el.className="";},350);
+  },ms);
+}
 
 /* ================================================================
    SESSION
@@ -3159,6 +3177,17 @@ document.getElementById("buyerRegForm").addEventListener("submit",function(e){
     const newU={id:Date.now(),name,email,phone,addr,pass,role:"buyer",joined:new Date().toISOString().split("T")[0]};
     users.push(newU);setUsers(users);
     saveSession({id:newU.id,name,email,role:"buyer"});
+    // Geocode buyer address in background (Bangladesh-wide)
+    if(addr){
+      fetch("https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Bangladesh")+"&format=json&limit=1&countrycodes=bd",
+        {headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
+        .then(r=>r.json()).then(data=>{
+          if(data&&data[0]){
+            const us=getUsers();const i=us.findIndex(u=>u.id===newU.id);
+            if(i>-1){us[i].lat=parseFloat(data[0].lat);us[i].lon=parseFloat(data[0].lon);setUsers(us);}
+          }
+        }).catch(()=>{});
+    }
     toast(`Welcome to HomeBite, ${name}!`,"green");
     setTimeout(openBuyerDash,700);
   },600);
@@ -3187,7 +3216,7 @@ document.getElementById("sellerRegForm").addEventListener("submit",function(e){
     users.push(newU);setUsers(users);
     saveSession({id:newU.id,name,email,role:"seller",kitchen});
     // Try to get coordinates for the address in the background
-    const geoUrl="https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Dhaka")+"&format=json&limit=1";
+    const geoUrl="https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Bangladesh")+"&format=json&limit=1&countrycodes=bd";
     fetch(geoUrl,{headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
       .then(r=>r.json()).then(data=>{
         if(data&&data[0]){
@@ -3518,11 +3547,18 @@ function renderBuyerOrders(filter){
     const ratingHtml=ratingData
       ?`<div class="ob-rating">${[1,2,3,4,5].map(n=>`<i class="fa-${n<=ratingData.stars?'solid':'regular'} fa-star"></i>`).join("")}<span>${ratingData.stars}/5</span></div>`
       :(o.status==="Delivered"?`<button class="ob-btn" onclick="openRateModal('${o.id}')"><i class="fa-regular fa-star"></i> Rate</button>`:"");
-    const cancelBtn=o.status==="Received"?`<button class="ob-btn" style="color:var(--red);border-color:var(--red);" onclick="cancelOrder('${o.id}')"><i class="fa-solid fa-xmark"></i> Cancel</button>`:"";
+    const canCancel=o.status==="Received"||o.status==="Cooking";
+    const cancelBtn=canCancel
+      ?`<button class="ob-btn" style="color:var(--red);border-color:var(--red);" onclick="cancelOrder('${o.id}')"><i class="fa-solid fa-xmark"></i> Cancel${o.status==="Cooking"?" (50%)":o.status==="Received"?" (10%)":""}</button>`
+      :"";
+    const penaltyBadge=o.status==="Cancelled"&&o.penalty
+      ?`<div style="font-size:.73rem;color:var(--red);font-weight:600;margin-top:4px;padding:0 0 4px;"><i class="fa-solid fa-triangle-exclamation"></i> Penalty charged: ৳${o.penalty} (${o.penaltyPct}%)</div>`
+      :"";
     const reorderBtn=o.status!=="Cancelled"?`<button class="ob-btn" onclick="reorderBuyer('${o.id}')"><i class="fa-solid fa-rotate-right"></i> Reorder</button>`:"";
     return `<div class="ob-card">
       <div class="ob-head"><div><div class="ob-id">${o.id}</div><div style="font-size:.75rem;color:var(--muted);margin-top:2px;"><i class="fa-regular fa-calendar" style="margin-right:3px;"></i>${fmtDate(o.date)}</div></div>${statusBadge(o.status)}</div>
       <div class="ob-chips">${chips}</div>
+      ${penaltyBadge?`<div style="padding:0 0 2px;">${penaltyBadge}</div>`:""}
       <div class="ob-foot">
         <div><div class="ob-total">${fmt(o.total)}</div><div class="ob-seller"><i class="fa-solid fa-store"></i>${o.seller}</div></div>
         <div class="ob-btns">
@@ -3635,10 +3671,23 @@ function saveProfile(){
   const idx=users.findIndex(u=>u.id===s.id);if(idx<0)return;
   const newName=document.getElementById("piName").value.trim();
   if(!newName){toast("Name cannot be empty","red");return;}
+  const newAddr=document.getElementById("piAddr").value.trim();
+  const oldAddr=users[idx].addr;
   users[idx].name=newName;
   users[idx].phone=document.getElementById("piPhone").value.trim();
-  users[idx].addr=document.getElementById("piAddr").value.trim();
+  users[idx].addr=newAddr;
   setUsers(users);
+  // Geocode new address if changed
+  if(newAddr&&newAddr!==oldAddr){
+    fetch("https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(newAddr+", Bangladesh")+"&format=json&limit=1&countrycodes=bd",
+      {headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
+      .then(r=>r.json()).then(data=>{
+        if(data&&data[0]){
+          const us=getUsers();const i=us.findIndex(u=>u.id===s.id);
+          if(i>-1){us[i].lat=parseFloat(data[0].lat);us[i].lon=parseFloat(data[0].lon);setUsers(us);}
+        }
+      }).catch(()=>{});
+  }
   const sess=getSession();sess.name=newName;saveSession(sess);
   document.getElementById("profAvLg").textContent=newName.charAt(0).toUpperCase();
   document.getElementById("profNameLg").textContent=newName;
@@ -4025,12 +4074,32 @@ function sendContactMsg(){
    ORDER CANCELLATION
 ================================================================ */
 function cancelOrder(oid){
-  if(!confirm(`Cancel order ${oid}? This action cannot be undone.`))return;
   const order=getOrders().find(o=>o.id===oid);
-  if(!order||order.status!=="Received"){toast("Order cannot be cancelled at this stage.","red");return;}
+  if(!order){toast("Order not found.","red");return;}
+  if(order.status==="Delivered"||order.status==="Cancelled"||order.status==="Out for Delivery"){
+    toast("This order cannot be cancelled.","red");return;
+  }
+  const foodCost=order.subtotal||order.total;
+  let penaltyPct=0, penaltyMsg="";
+  if(order.status==="Cooking"){
+    penaltyPct=50;
+    penaltyMsg=`⚠️ Your order is already being cooked.\n\nA 50% cancellation fee (৳${Math.round(foodCost*0.5)}) will be charged.\n\nDo you still want to cancel?`;
+  } else if(order.status==="Received"){
+    penaltyPct=10;
+    penaltyMsg=`Cancel order ${oid}?\n\nA 10% processing fee (৳${Math.round(foodCost*0.1)}) will be charged.\n\nDo you want to continue?`;
+  }
+  if(!confirm(penaltyMsg))return;
+  const penalty=Math.round(foodCost*penaltyPct/100);
   updateOrderStatus(oid,"Cancelled");
-  addNotification({type:"cancel",icon:"blue",text:`Order ${oid} has been cancelled.`,time:Date.now()});
-  toast("Order cancelled.","blue");
+  const orders=getOrders();
+  const idx=orders.findIndex(o=>o.id===oid);
+  if(idx>-1){orders[idx].penalty=penalty;orders[idx].penaltyPct=penaltyPct;setOrders(orders);}
+  addNotification({
+    type:"cancel",icon:"blue",
+    text:`Order ${oid} cancelled.`+(penalty>0?` Penalty: ৳${penalty} (${penaltyPct}%)`:""),
+    time:Date.now()
+  });
+  toast(penalty>0?`Order cancelled. ৳${penalty} penalty applied.`:"Order cancelled.","blue",3500);
   renderBuyerOrders(document.querySelector("#orderTabsEl .o-tab.active")?.dataset.f||"all");
 }
 
@@ -4225,7 +4294,7 @@ function saveSellerProfile(){
 
   // Geocode new address in background
   if(addr&&addr!==users[idx].addr){
-    const geoUrl="https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Dhaka")+"&format=json&limit=1";
+    const geoUrl="https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Bangladesh")+"&format=json&limit=1&countrycodes=bd";
     fetch(geoUrl,{headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
       .then(r=>r.json()).then(data=>{
         if(data&&data[0]){
