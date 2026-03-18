@@ -118,16 +118,38 @@ img{max-width:100%;display:block;}
 .modal-bg.modal-center{align-items:center;padding:20px;}
 
 /* ======================================================
-   NAVBAR
+   NAVBAR — Beautiful animated desktop nav
 ====================================================== */
-.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav);background:rgba(255,255,255,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
-.navbar.scrolled{box-shadow:var(--sh2);}
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:100%;display:flex;align-items:center;gap:10px;}
-.nav-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.2rem;color:var(--dark);cursor:pointer;flex-shrink:0;}
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav);
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .3s,background .3s;
+}
+.navbar.scrolled{
+  box-shadow:0 2px 20px rgba(0,0,0,.09);
+  background:rgba(255,255,255,.99);
+}
+.nav-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 20px;height:100%;
+  display:flex;align-items:center;gap:10px;
+}
+
+/* Logo */
+.nav-logo{
+  display:flex;align-items:center;gap:8px;
+  font-weight:800;font-size:1.2rem;color:var(--dark);
+  cursor:pointer;flex-shrink:0;
+  transition:opacity .2s;
+}
+.nav-logo:hover{opacity:.82;}
 .nav-logo i{color:var(--p);}
 .nav-logo em{color:var(--p);font-style:normal;}
 
-/* Location pill — mobile only, hidden on desktop */
+/* Location pill */
 .nav-location{
   display:flex;align-items:center;gap:6px;
   background:var(--light);border:1.5px solid var(--border);
@@ -135,62 +157,195 @@ img{max-width:100%;display:block;}
   font-size:.82rem;font-weight:600;color:var(--text);
   cursor:pointer;flex-shrink:0;
   max-width:170px;overflow:hidden;
-  transition:border-color .2s,background .2s;
+  transition:border-color .2s,background .2s,box-shadow .2s;
   user-select:none;-webkit-user-select:none;
 }
-.nav-location:hover{border-color:var(--p);background:#fff;}
+.nav-location:hover{border-color:var(--p);background:#fff;box-shadow:0 0 0 3px var(--p4);}
 .nav-location:active{background:var(--border);}
 .nav-location i:first-child{color:var(--p);flex-shrink:0;}
 .nav-location #locText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
 .nav-location .loc-arrow{font-size:.5rem;opacity:.55;flex-shrink:0;}
 
-/* Search — desktop */
-.nav-search{flex:1;max-width:380px;margin:0 16px;display:flex;align-items:center;gap:8px;background:var(--light);border:1.5px solid var(--border);border-radius:var(--rpill);padding:8px 16px;transition:all .2s;}
+/* Search */
+.nav-search{
+  flex:1;max-width:380px;margin:0 16px;
+  display:flex;align-items:center;gap:8px;
+  background:var(--light);border:1.5px solid var(--border);
+  border-radius:var(--rpill);padding:8px 16px;
+  transition:all .25s;
+}
 .nav-search:focus-within{border-color:var(--p);background:#fff;box-shadow:0 0 0 3px var(--p4);}
 .nav-search i{color:var(--muted);font-size:.88rem;flex-shrink:0;}
 .nav-search input{flex:1;background:none;border:none;outline:none;font-size:.87rem;color:var(--text);}
 .nav-search input::placeholder{color:var(--muted);}
 
-/* Nav links — desktop */
-.nav-links{display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;}
-.nl{padding:7px 12px;border-radius:var(--rpill);font-weight:600;font-size:.85rem;color:var(--muted);transition:all .2s;cursor:pointer;white-space:nowrap;}
-.nl:hover,.nl.active{background:var(--p4);color:var(--p);}
+/* ── Nav links with animated pill indicator ── */
+.nav-links{
+  display:flex;align-items:center;gap:2px;
+  margin-left:auto;flex-shrink:0;
+  position:relative;
+}
+/* The sliding background pill indicator */
+.nav-links::before{
+  content:'';
+  position:absolute;
+  background:var(--p4);
+  border-radius:var(--rpill);
+  transition:left .3s cubic-bezier(.4,0,.2,1),
+             width .3s cubic-bezier(.4,0,.2,1),
+             opacity .2s;
+  height:34px;top:50%;transform:translateY(-50%);
+  left:var(--pill-left,0);
+  width:var(--pill-width,0);
+  opacity:0;pointer-events:none;
+  z-index:0;
+}
+.nav-links.ready::before{opacity:1;}
+
+.nl{
+  position:relative;z-index:1;
+  padding:7px 14px;
+  border-radius:var(--rpill);
+  font-weight:600;font-size:.85rem;
+  color:var(--muted);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:color .25s;
+  /* No background — the ::before handles it */
+  background:transparent;
+  border:none;
+  font-family:var(--font);
+}
+.nl:hover{color:var(--p);}
+.nl.active{color:var(--p);font-weight:700;}
+
+/* Dot indicator under active link */
+.nl::after{
+  content:'';
+  position:absolute;
+  bottom:2px;left:50%;
+  transform:translateX(-50%) scaleX(0);
+  width:16px;height:2px;
+  background:var(--p);border-radius:2px;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.nl.active::after{transform:translateX(-50%) scaleX(1);}
 
 /* Right actions */
 .nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.nav-icon-btn{width:38px;height:38px;border-radius:50%;background:var(--light);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;position:relative;cursor:pointer;border:none;}
-.nav-icon-btn:hover{background:var(--p);color:#fff;}
-.nav-badge{position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:var(--p);color:#fff;border-radius:50%;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;}
+.nav-icon-btn{
+  width:38px;height:38px;
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;transition:all .2s;
+  position:relative;cursor:pointer;border:none;
+  overflow:hidden;
+}
+.nav-icon-btn::before{
+  content:'';position:absolute;inset:0;
+  background:var(--p);border-radius:50%;
+  transform:scale(0);transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-icon-btn:hover::before{transform:scale(1);}
+.nav-icon-btn:hover i{color:#fff;position:relative;z-index:1;}
+.nav-icon-btn i{transition:color .2s;position:relative;z-index:1;}
+.nav-badge {
+	position: absolute;
+	top: 2px;
+	right: 0px;
+	min-width: 13px;
+	height: 13px;
+	background: var(--p);
+	color: #fff;
+	border-radius: 50%;
+	font-size: .4rem;
+	font-weight: 800;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 2px solid #fff;
+	z-index: 2;
+	transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-badge.bump{transform:scale(1.4);}
 
 /* User avatar dropdown */
-.user-btn{display:flex;align-items:center;gap:7px;padding:5px 12px 5px 5px;background:var(--light);border-radius:var(--rpill);cursor:pointer;border:none;transition:all .2s;}
+.user-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 12px 5px 5px;
+  background:var(--light);border-radius:var(--rpill);
+  cursor:pointer;border:none;transition:all .2s;
+}
 .user-btn:hover{background:var(--border);}
-.uav{width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;}
+.uav{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--p);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.78rem;
+}
 .user-btn span{font-size:.83rem;font-weight:600;color:var(--text);}
-.user-dd-menu{position:absolute;top:calc(100%+6px);right:0;min-width:190px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r16);box-shadow:var(--sh3);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all .2s;z-index:100;}
+.user-dd-menu{
+  position:absolute;top:calc(100%+8px);right:0;
+  min-width:200px;background:#fff;
+  border:1.5px solid var(--border);border-radius:var(--r16);
+  box-shadow:var(--sh3);overflow:hidden;
+  opacity:0;pointer-events:none;
+  transform:translateY(-6px) scale(.97);
+  transform-origin:top right;
+  transition:opacity .2s,transform .2s cubic-bezier(.4,0,.2,1);
+  z-index:100;
+}
 .user-dd-wrap{position:relative;}
-.user-dd-menu.open{opacity:1;pointer-events:all;transform:translateY(0);}
-.udd-head{padding:12px 14px 8px;border-bottom:1px solid var(--border);}
-.udd-head strong{display:block;font-size:.88rem;color:var(--dark);}
-.udd-head small{font-size:.75rem;color:var(--muted);}
-.udd-item{display:flex;align-items:center;gap:9px;padding:9px 14px;font-size:.84rem;font-weight:500;color:var(--text);cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left;}
+.user-dd-menu.open{
+  opacity:1;pointer-events:all;
+  transform:translateY(0) scale(1);
+}
+.udd-head{padding:13px 15px 9px;border-bottom:1px solid var(--border);}
+.udd-head strong{display:block;font-size:.9rem;color:var(--dark);}
+.udd-head small{font-size:.76rem;color:var(--muted);}
+.udd-item{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 15px;font-size:.84rem;font-weight:500;
+  color:var(--text);cursor:pointer;
+  transition:background .15s,color .15s;
+  border:none;background:none;width:100%;text-align:left;
+}
 .udd-item:hover{background:var(--light);color:var(--p);}
 .udd-item.red:hover{background:#fee2e2;color:var(--red);}
-.udd-item i{width:15px;color:var(--muted);}
+.udd-item i{width:15px;color:var(--muted);transition:color .15s;}
+.udd-item:hover i{color:var(--p);}
+.udd-item.red:hover i{color:var(--red);}
 
-/* Desktop-only class: hidden on mobile */
+/* Desktop-only group wrapper */
+.nav-desktop-group{
+  display:flex;
+  align-items:center;
+  flex:1;
+  gap:8px;
+  min-width:0;
+}
+
+/* Desktop-only class (kept for any remaining uses) */
 .nav-desktop-only{display:flex;}
 
-/* Mobile: hide desktop-only elements, show location pill */
+/* Mobile: hide desktop group entirely, show only logo + location */
 @media(max-width:768px){
-  .nav-desktop-only{display:none!important;}
-  .nav-search{display:none;}
-  .nav-links{display:none;}
-  .nav-actions{display:none!important;}
-  .nav-inner{padding:0 16px;display:flex;align-items:center;justify-content:space-between;}
-  .nav-logo{font-size:1.05rem;flex-shrink:0;}
+  .nav-desktop-group{display:none!important;}
+  .nav-inner{
+    padding:0 16px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:0!important;
+  }
+  .nav-logo{font-size:1.05rem;flex-shrink:0!important;}
   .nav-logo i{font-size:1rem;}
-  .nav-location{display:flex;flex:1;max-width:none;margin:0 10px;}
+  .nav-location{
+    display:flex!important;
+    flex-shrink:0!important;
+    max-width:200px!important;
+    margin-left:0!important;
+  }
 }
 
 /* ======================================================
@@ -243,18 +398,43 @@ img{max-width:100%;display:block;}
 .cat-pill.active span{color:var(--p);}
 
 /* Seller cards */
-.sellers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
-.seller-card{background:#fff;border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1);border:1.5px solid var(--border);transition:all .3s;cursor:pointer;}
+.sellers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.seller-card{
+  background:#fff;border-radius:var(--r16);overflow:hidden;
+  box-shadow:var(--sh1);border:1.5px solid var(--border);
+  transition:all .3s;
+  display:flex;flex-direction:column;
+  height:100%; /* stretch to fill grid row */
+}
 .seller-card:hover{transform:translateY(-4px);box-shadow:var(--sh3);border-color:var(--p);}
-.sc-banner{height:120px;background:linear-gradient(135deg,var(--dark2),#3d2010);display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;}
+.sc-banner{height:120px;background:linear-gradient(135deg,var(--dark2),#3d2010);display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;flex-shrink:0;}
 .sc-banner-overlay{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=50') center/cover;opacity:.15;}
 .sc-av{position:absolute;bottom:-20px;left:16px;width:48px;height:48px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;border:3px solid #fff;box-shadow:var(--sh1);}
-.sc-body{padding:28px 16px 16px;}
-.sc-name{font-weight:700;font-size:1rem;color:var(--dark);margin-bottom:3px;}
+.sc-body{
+  padding:28px 16px 16px;
+  display:flex;flex-direction:column;
+  flex:1; /* take all remaining height */
+}
+.sc-name{font-weight:700;font-size:1rem;color:var(--dark);margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sc-meta{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
 .sc-meta i{color:var(--p);}
-.sc-tags{display:flex;flex-wrap:wrap;gap:5px;}
+/* Fixed-height tag area — always 44px, fade overflow with gradient */
+.sc-tags{
+  display:flex;flex-wrap:wrap;gap:5px;
+  max-height:44px;overflow:hidden;
+  margin-bottom:10px;
+  position:relative;
+  mask-image:linear-gradient(to bottom, black 60%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom, black 60%, transparent 100%);
+}
 .sc-tag{padding:3px 9px;background:var(--light);border-radius:var(--rpill);font-size:.7rem;font-weight:600;color:var(--muted);}
+/* Distance badge fixed height placeholder */
+.sc-dist{height:28px;display:flex;align-items:center;margin-bottom:2px;}
+/* Spacer pushes buttons to bottom */
+.sc-spacer{flex:1;}
+/* Action buttons always at bottom */
+.sc-actions{display:flex;gap:7px;margin-top:10px;flex-shrink:0;}
 
 /* Food card grid */
 .food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
@@ -590,7 +770,46 @@ img{max-width:100%;display:block;}
 .empty-st p{font-size:.92rem;margin-bottom:16px;}
 
 /* ======================================================
-   FOOTER GRID (replaces inline style for responsive control)
+   SEARCH DROPDOWN
+====================================================== */
+.search-dropdown{
+  position:absolute;top:calc(100% + 8px);left:0;right:0;
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--r16);
+  box-shadow:var(--sh3);z-index:500;overflow:hidden;
+  max-height:360px;overflow-y:auto;
+  opacity:0;pointer-events:none;transform:translateY(-6px);
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+}
+.search-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.sd-section{padding:8px 0 4px;}
+.sd-label{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;padding:4px 14px 6px;}
+.sd-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s;}
+.sd-item:hover{background:var(--light);}
+.sd-emoji{width:34px;height:34px;background:var(--light);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.sd-info{flex:1;}
+.sd-info strong{display:block;font-size:.86rem;color:var(--dark);font-weight:600;}
+.sd-info small{font-size:.74rem;color:var(--muted);}
+.sd-price{font-size:.88rem;font-weight:800;color:var(--p);flex-shrink:0;}
+.sd-seller-row{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s;}
+.sd-seller-row:hover{background:var(--light);}
+.sd-sav{width:30px;height:30px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0;}
+.sd-divider{height:1px;background:var(--border);margin:4px 0;}
+.sd-empty{padding:18px 14px;text-align:center;color:var(--muted);font-size:.85rem;}
+.nav-search-wrap{position:relative;flex:1;max-width:380px;margin:0 16px;}
+
+/* ======================================================
+   SKELETON LOADING
+====================================================== */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton{
+  background:linear-gradient(90deg,var(--light) 25%,#ece4da 50%,var(--light) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:var(--r8);
+}
+
+/* ======================================================
+   FOOTER GRID
 ====================================================== */
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px;}
 
@@ -1017,11 +1236,52 @@ img{max-width:100%;display:block;}
   .mni-box{width:48px!important;height:36px!important;}
   .mni:active .mni-box{background:var(--p4)!important;background:rgba(255,90,31,.12)!important;}
 }
+
+/* ── Back to top button ─────────────────────────────────── */
+#backToTop{
+  position:fixed;bottom:80px;right:20px;z-index:900;
+  width:42px;height:42px;border-radius:50%;
+  background:var(--p);color:#fff;border:none;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+  font-size:.9rem;box-shadow:0 4px 16px rgba(255,90,31,.4);
+  transition:all .25s;
+}
+#backToTop.visible{display:flex;}
+#backToTop:hover{background:var(--p2);transform:translateY(-2px);}
+@media(max-width:768px){
+  #backToTop{bottom:70px;right:14px;width:38px;height:38px;}
+}
+
+/* ── Star ratings ─────────────────────────────────────────── */
+.rate-star{font-size:2rem;cursor:pointer;transition:transform .15s;display:inline-block;filter:grayscale(1);opacity:.4;}
+.rate-star.active{filter:none;opacity:1;transform:scale(1.15);}
+.rate-star:hover{transform:scale(1.25);}
+.ob-rating{display:flex;gap:2px;align-items:center;}
+.ob-rating i{color:#f59e0b;font-size:.75rem;}
+.ob-rating span{font-size:.75rem;color:var(--muted);margin-left:3px;}
+
+/* ── Notification panel ───────────────────────────────────── */
+.notif-item{display:flex;align-items:flex-start;gap:9px;padding:10px 14px;border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;}
+.notif-item:hover{background:var(--light);}
+.notif-item.unread{background:#fffbf9;}
+.notif-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.notif-ico.green{background:#dcfce7;color:var(--green);}
+.notif-ico.orange{background:var(--p4);color:var(--p);}
+.notif-ico.blue{background:#dbeafe;color:var(--blue);}
+.notif-body p{font-size:.82rem;color:var(--dark);line-height:1.4;margin-bottom:2px;}
+.notif-body small{font-size:.72rem;color:var(--muted);}
+
+/* ── Kitchen open/closed toggle ───────────────────────────── */
+.toggle-switch{width:44px;height:24px;background:#d1d5db;border-radius:var(--rpill);position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;}
+.toggle-switch.on{background:var(--green);}
+.toggle-knob{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle-switch.on .toggle-knob{left:22px;}
 </style>
 </head>
 <body>
 
 <div id="toast"></div>
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top"><i class="fa-solid fa-chevron-up"></i></button>
 
 <!-- ============================================================
      NAVBAR
@@ -1031,59 +1291,82 @@ img{max-width:100%;display:block;}
 <nav class="navbar" id="navbar" style="display:none;">
   <div class="nav-inner">
 
-    <!-- Logo -->
+    <!-- Logo — always visible -->
     <div class="nav-logo" onclick="showHome()">
       <i class="fa-solid fa-bowl-food"></i>Home<em>Bite</em>
     </div>
 
-    <!-- Location pill — tapping fetches live location (both mobile & desktop) -->
+    <!-- Location pill — always visible, used on both mobile & desktop -->
     <div class="nav-location" id="navLocation" onclick="requestLocation()" title="Tap to detect your location">
       <i class="fa-solid fa-location-dot" id="locIcon"></i>
       <span id="locText">Detecting…</span>
       <i class="fa-solid fa-chevron-down loc-arrow"></i>
     </div>
 
-    <!-- Search bar (hidden on mobile — bottom bar has search tab) -->
-    <div class="nav-search">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="navSearch" placeholder="Search for food, restaurants..."/>
-    </div>
+    <!-- Desktop-only group: search + nav links + actions -->
+    <div class="nav-desktop-group">
 
-    <!-- Desktop nav links -->
-    <ul class="nav-links" id="navLinks">
-      <li><span class="nl active" onclick="showHome()">Home</span></li>
-      <li><span class="nl" onclick="showPage('page-track');showNavbar()">Track Order</span></li>
-      <li><span class="nl" onclick="showPage('page-seller-register')">Sell on HomeBite</span></li>
-    </ul>
-
-    <!-- Desktop right actions -->
-    <div class="nav-actions">
-      <!-- Cart (desktop only — mobile has bottom bar cart tab) -->
-      <button class="nav-icon-btn nav-desktop-only" id="navCartBtn" onclick="openCart()" title="Cart">
-        <i class="fa-solid fa-bag-shopping"></i>
-        <span class="nav-badge" id="navCartBadge">0</span>
-      </button>
-
-      <!-- Guest buttons (desktop only) -->
-      <div id="navGuestBtns" class="nav-desktop-only" style="display:flex;gap:6px;">
-        <button class="btn btn-ghost btn-sm" onclick="showPage('page-login')">Login</button>
-        <button class="btn btn-primary btn-sm" onclick="showPage('page-buyer-register')">Join Free</button>
+      <!-- Search bar -->
+      <div class="nav-search-wrap">
+        <div class="nav-search" id="navSearchBox">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="navSearch" placeholder="Search for food, restaurants..." autocomplete="off"
+            oninput="onNavSearch(this.value)" onfocus="onNavSearchFocus()" onblur="setTimeout(closeNavSearch,180)"/>
+        </div>
+        <div class="search-dropdown" id="navSearchDd"></div>
       </div>
 
-      <!-- Logged-in user dropdown (desktop only) -->
-      <div class="user-dd-wrap nav-desktop-only" id="navUserWrap" style="display:none;">
-        <button class="user-btn" id="navUserBtn">
-          <div class="uav" id="navUserAv">U</div>
-          <span id="navUserName">User</span>
-          <i class="fa-solid fa-chevron-down" style="font-size:.6rem;color:var(--muted);"></i>
+      <!-- Nav links -->
+      <ul class="nav-links" id="navLinks">
+        <li><span class="nl active" data-page="page-home"    onclick="showHome()">Home</span></li>
+        <li><span class="nl"        data-page="page-track"   onclick="showPage('page-track');showNavbar()">Track Order</span></li>
+        <li><span class="nl"        data-page="page-seller-register" onclick="showPage('page-seller-register')">Sell on HomeBite</span></li>
+      </ul>
+
+      <!-- Right actions -->
+      <div class="nav-actions">
+        <button class="nav-icon-btn" id="navCartBtn" onclick="openCart()" title="Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="nav-badge" id="navCartBadge">0</span>
         </button>
-        <div class="user-dd-menu" id="navUserDd">
-          <div class="udd-head"><strong id="ddFullName">User</strong><small id="ddEmail">email</small></div>
-          <button class="udd-item" id="ddDashBtn" onclick="goToDash()"><i class="fa-solid fa-gauge"></i>Dashboard</button>
-          <button class="udd-item red" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
+
+        <!-- Notification bell -->
+        <div class="user-dd-wrap" id="notifWrap" style="display:none;">
+          <button class="nav-icon-btn" id="notifBtn" title="Notifications" onclick="toggleNotifPanel()">
+            <i class="fa-solid fa-bell"></i>
+            <span class="nav-badge" id="notifBadge" style="display:none;">0</span>
+          </button>
+          <div class="user-dd-menu" id="notifPanel" style="min-width:280px;max-height:340px;overflow-y:auto;">
+            <div class="udd-head" style="display:flex;align-items:center;justify-content:space-between;">
+              <strong>Notifications</strong>
+              <button onclick="clearNotifications()" style="font-size:.74rem;color:var(--muted);background:none;border:none;cursor:pointer;">Clear all</button>
+            </div>
+            <div id="notifList"><div class="udd-item" style="color:var(--muted);font-size:.82rem;">No notifications yet</div></div>
+          </div>
+        </div>
+
+        <!-- Guest buttons -->
+        <div id="navGuestBtns" style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="showPage('page-login')">Login</button>
+          <button class="btn btn-primary btn-sm" onclick="showPage('page-buyer-register')">Sign Up</button>
+        </div>
+
+        <!-- Logged-in user dropdown -->
+        <div class="user-dd-wrap" id="navUserWrap" style="display:none;">
+          <button class="user-btn" id="navUserBtn">
+            <div class="uav" id="navUserAv">U</div>
+            <span id="navUserName">User</span>
+            <i class="fa-solid fa-chevron-down" style="font-size:.6rem;color:var(--muted);"></i>
+          </button>
+          <div class="user-dd-menu" id="navUserDd">
+            <div class="udd-head"><strong id="ddFullName">User</strong><small id="ddEmail">email</small></div>
+            <button class="udd-item" id="ddDashBtn" onclick="goToDash()"><i class="fa-solid fa-gauge"></i>Dashboard</button>
+            <button class="udd-item red" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
+          </div>
         </div>
       </div>
-    </div>
+
+    </div><!-- end nav-desktop-group -->
 
   </div>
 </nav>
@@ -1167,7 +1450,11 @@ img{max-width:100%;display:block;}
     </div>
   </div>
 
-  <div class="promo-strip"><i class="fa-solid fa-tag"></i>Use code <strong>FIRSTBITE</strong> for 10% off your first order! &nbsp;|&nbsp; Free delivery above ৳300</div>
+  <div class="promo-strip" id="promoStrip">
+    <i class="fa-solid fa-tag"></i>
+    Use code <strong>FIRSTBITE</strong> for 10% off your first order! &nbsp;|&nbsp; Free delivery above ৳300
+    <button onclick="document.getElementById('promoStrip').style.display='none'" style="background:none;border:none;color:#fff;margin-left:12px;cursor:pointer;opacity:.7;font-size:.9rem;padding:0;line-height:1;" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+  </div>
 
   <!-- Categories -->
   <div class="section" style="padding-bottom:0;">
@@ -1178,13 +1465,19 @@ img{max-width:100%;display:block;}
   </div>
 
   <!-- Sellers -->
-  <div class="section">
+  <div class="section" id="sellers">
     <div class="con">
       <div class="sec-head">
-        <div><h2>Our Home Kitchens</h2><p>Real home chefs delivering authentic flavours</p></div>
-        <a onclick="document.getElementById('allMenuSec').scrollIntoView({behavior:'smooth'})">View all items →</a>
+        <div><h2 id="sellersHeading">Our Home Kitchens</h2><p id="sellersSub">Real home chefs delivering authentic flavours</p></div>
+        <a id="sellersViewAll" onclick="document.getElementById('allMenuSec').scrollIntoView({behavior:'smooth'})">View all items →</a>
       </div>
       <div class="sellers-grid" id="sellersGrid"></div>
+      <!-- See More button — shown when more than 3 sellers exist -->
+      <div id="seeMoreSellersWrap" style="display:none;text-align:center;margin-top:22px;">
+        <button class="btn btn-outline" id="seeMoreSellersBtn" onclick="showAllSellers()">
+          <i class="fa-solid fa-store"></i>See All Sellers
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1397,6 +1690,7 @@ img{max-width:100%;display:block;}
         <button class="dn" data-p="s-menu"><i class="fa-solid fa-utensils"></i>My Menu</button>
         <button class="dn" data-p="s-messages"><i class="fa-solid fa-envelope"></i>Messages<span class="dn-badge" id="sdnMsgs">0</span></button>
         <button class="dn" data-p="s-customers"><i class="fa-solid fa-users"></i>My Customers</button>
+        <button class="dn" data-p="s-profile"><i class="fa-solid fa-user-circle"></i>My Profile</button>
       </nav>
       <div class="ds-foot">
         <button class="dn" onclick="showHome()"><i class="fa-solid fa-store"></i>View Store</button>
@@ -1423,13 +1717,16 @@ img{max-width:100%;display:block;}
           </div>
           <div class="dash-row">
             <div class="dash-card"><div class="dch"><h3>Recent Orders</h3><button class="btn btn-ghost btn-sm" onclick="sellerPanel('s-orders')">View All →</button></div><div class="tbl-wrap"><table class="dtbl"><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="sRecentOrders"></tbody></table></div></div>
-            <div class="dash-card"><div class="dch"><h3>Sales by Item</h3></div><div id="sPopItems"></div></div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="dash-card"><div class="dch"><h3>Revenue (7 days)</h3></div><div style="padding:10px 14px 14px;" id="sRevChart"></div></div>
+              <div class="dash-card"><div class="dch"><h3>Sales by Item</h3></div><div id="sPopItems"></div></div>
+            </div>
           </div>
         </div>
         <div class="dp" id="dp-s-orders">
           <div class="toolbar">
             <div class="tb-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="sOrderSearch" placeholder="Search orders..." oninput="renderSellerOrders()"/></div>
-            <select class="tb-sel" id="sOrderStatus" onchange="renderSellerOrders()"><option value="all">All Status</option><option value="Received">Received</option><option value="Cooking">Cooking</option><option value="Out for Delivery">Out for Delivery</option><option value="Delivered">Delivered</option></select>
+            <select class="tb-sel" id="sOrderStatus" onchange="renderSellerOrders()"><option value="all">All Status</option><option value="Received">Received</option><option value="Cooking">Cooking</option><option value="Out for Delivery">Out for Delivery</option><option value="Delivered">Delivered</option><option value="Cancelled">Cancelled</option></select>
           </div>
           <div class="dash-card"><div class="tbl-wrap"><table class="dtbl"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="sOrdersTbody"></tbody></table></div></div>
         </div>
@@ -1447,6 +1744,74 @@ img{max-width:100%;display:block;}
         </div>
         <div class="dp" id="dp-s-messages"><div class="dash-card"><div class="dch"><h3>Customer Messages</h3></div><div id="sMsgsList"></div></div></div>
         <div class="dp" id="dp-s-customers"><div class="dash-card"><div class="tbl-wrap"><table class="dtbl"><thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Spent</th></tr></thead><tbody id="sCustTbody"></tbody></table></div></div></div>
+
+        <!-- SELLER PROFILE PANEL -->
+        <div class="dp" id="dp-s-profile">
+          <div style="margin-bottom:20px;">
+            <h2 style="font-family:var(--display);font-size:1.4rem;color:var(--dark);">My Profile</h2>
+            <p style="color:var(--muted);font-size:.84rem;margin-top:3px;">Manage your kitchen details and account settings</p>
+          </div>
+          <div class="prof-layout">
+
+            <!-- Left: Avatar card -->
+            <div class="prof-card">
+              <div class="prof-av-lg" id="sProfileAv" style="background:linear-gradient(135deg,var(--p),var(--p2));">S</div>
+              <div class="prof-name" id="sProfileKitchen">Kitchen</div>
+              <div class="prof-email" id="sProfileEmail">email</div>
+              <div class="badge badge-orange" style="margin-bottom:6px;"><i class="fa-solid fa-store"></i>&nbsp;Seller</div>
+
+              <!-- Kitchen open/closed toggle -->
+              <div style="margin:14px 0;padding:12px;background:var(--light);border-radius:var(--r12);text-align:left;">
+                <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Kitchen Status</div>
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:10px;">
+                  <span id="kitchenStatusLabel" style="font-size:.88rem;font-weight:600;color:var(--green);">🟢 Open for Orders</span>
+                  <div class="toggle-switch" id="kitchenToggle" onclick="toggleKitchenStatus()">
+                    <div class="toggle-knob"></div>
+                  </div>
+                </label>
+              </div>
+
+              <div class="prof-stats">
+                <div class="ps-n"><strong id="sProfileOrders">0</strong><span>Orders</span></div>
+                <div class="ps-n"><strong id="sProfileRev">৳0</strong><span>Revenue</span></div>
+                <div class="ps-n"><strong id="sProfileItems">0</strong><span>Items</span></div>
+              </div>
+              <div style="margin-top:12px;font-size:.76rem;color:var(--muted);">Member since <span id="sProfileJoined">–</span></div>
+            </div>
+
+            <!-- Right: Edit form -->
+            <div class="prof-edit">
+              <h3>Kitchen Details</h3>
+              <div class="pi-row">
+                <div class="pi-box"><i class="fa-solid fa-store"></i><div class="pi-inner"><small>Kitchen / Business Name</small><input type="text" id="spKitchen" placeholder="e.g. Amma's Kitchen"/></div></div>
+                <div class="pi-box"><i class="fa-solid fa-user"></i><div class="pi-inner"><small>Your Full Name</small><input type="text" id="spName" placeholder="Your name"/></div></div>
+              </div>
+              <div class="pi-box"><i class="fa-solid fa-phone"></i><div class="pi-inner"><small>Phone Number</small><input type="tel" id="spPhone" placeholder="+880 1XXXXXXXXX"/></div></div>
+              <div class="pi-box"><i class="fa-solid fa-envelope"></i><div class="pi-inner"><small>Email (read-only)</small><input type="email" id="spEmail" readonly style="opacity:.6;cursor:not-allowed;"/></div></div>
+              <div class="pi-box"><i class="fa-solid fa-location-dot"></i><div class="pi-inner"><small>Kitchen Address</small><input type="text" id="spAddr" placeholder="Your kitchen location in Dhaka"/></div></div>
+              <div class="pi-box" style="align-items:flex-start;"><i class="fa-solid fa-align-left" style="margin-top:4px;"></i><div class="pi-inner"><small>Kitchen Description (shown to customers)</small><textarea id="spDesc" rows="3" placeholder="Tell customers about your kitchen, specialties, and cooking style..." style="background:none;border:none;outline:none;font-size:.88rem;font-weight:500;color:var(--dark);width:100%;resize:none;line-height:1.5;font-family:var(--font);"></textarea></div></div>
+              <button class="btn btn-primary" id="saveSellerProfileBtn" onclick="saveSellerProfile()" style="margin-top:6px;"><i class="fa-solid fa-floppy-disk"></i>Save Changes</button>
+
+              <div class="sect-sep"></div>
+              <h3>Change Password</h3>
+              <div class="pi-box"><i class="fa-solid fa-lock"></i><div class="pi-inner"><small>Current Password</small><input type="password" id="spOldPass" placeholder="Current password"/></div></div>
+              <div class="pi-row">
+                <div class="pi-box"><i class="fa-solid fa-key"></i><div class="pi-inner"><small>New Password</small><input type="password" id="spNewPass" placeholder="Min 6 characters"/></div></div>
+                <div class="pi-box"><i class="fa-solid fa-key"></i><div class="pi-inner"><small>Confirm New</small><input type="password" id="spNewPass2" placeholder="Repeat password"/></div></div>
+              </div>
+              <div class="field err" id="sPassErr" style="margin-bottom:7px;font-size:.8rem;"></div>
+              <button class="btn btn-outline" onclick="saveSellerPassword()"><i class="fa-solid fa-shield-halved"></i>Update Password</button>
+
+              <div class="sect-sep"></div>
+              <h3 style="color:var(--red);">Danger Zone</h3>
+              <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:var(--r12);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                <div><div style="font-size:.88rem;font-weight:600;color:var(--dark);">Delete Account</div><div style="font-size:.78rem;color:var(--muted);margin-top:2px;">Permanently remove your kitchen and all data</div></div>
+                <button class="btn btn-danger btn-sm" onclick="deleteSellerAccount()"><i class="fa-solid fa-trash"></i>Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1469,6 +1834,7 @@ img{max-width:100%;display:block;}
       <nav class="ds-nav">
         <button class="dn active" data-p="b-home"><i class="fa-solid fa-house"></i>Dashboard</button>
         <button class="dn" data-p="b-orders"><i class="fa-solid fa-receipt"></i>My Orders</button>
+        <button class="dn" data-p="b-favs"><i class="fa-solid fa-heart"></i>Favourites<span class="dn-badge" id="bdnFavs">0</span></button>
         <button class="dn" data-p="b-track"><i class="fa-solid fa-motorcycle"></i>Track Order</button>
         <button class="dn" data-p="b-profile"><i class="fa-solid fa-user"></i>My Profile</button>
       </nav>
@@ -1494,7 +1860,7 @@ img{max-width:100%;display:block;}
             <div class="stat-box"><div class="sb-ico sb-or"><i class="fa-solid fa-receipt"></i></div><div class="sb-lbl">Total Orders</div><div class="sb-val" id="bs-orders">0</div></div>
             <div class="stat-box"><div class="sb-ico sb-gr"><i class="fa-solid fa-bangladeshi-taka-sign"></i></div><div class="sb-lbl">Total Spent</div><div class="sb-val" id="bs-spent">৳0</div></div>
             <div class="stat-box"><div class="sb-ico sb-bl"><i class="fa-solid fa-circle-check"></i></div><div class="sb-lbl">Delivered</div><div class="sb-val" id="bs-delivered">0</div></div>
-            <div class="stat-box"><div class="sb-ico sb-pu"><i class="fa-solid fa-spinner"></i></div><div class="sb-lbl">Active</div><div class="sb-val" id="bs-active">0</div></div>
+            <div class="stat-box" style="cursor:pointer;" onclick="buyerPanel('b-favs')"><div class="sb-ico" style="background:#fee2e2;color:var(--red);"><i class="fa-solid fa-heart"></i></div><div class="sb-lbl">Favourites</div><div class="sb-val" id="bs-favs">0</div></div>
           </div>
           <div class="bd-row">
             <div class="dash-card"><div class="dch"><h3>Recent Orders</h3><button class="btn btn-ghost btn-sm" onclick="buyerPanel('b-orders')">View All →</button></div><div id="bdRecentOrders"></div></div>
@@ -1504,7 +1870,10 @@ img{max-width:100%;display:block;}
         <div class="dp" id="dp-b-orders">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
             <div><h2 style="font-family:var(--display);font-size:1.4rem;color:var(--dark);">My Orders</h2><p style="color:var(--muted);font-size:.84rem;">All your past and current orders</p></div>
-            <button class="btn btn-primary btn-sm" onclick="showHome()"><i class="fa-solid fa-plus"></i>New Order</button>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-ghost btn-sm" onclick="exportOrdersCSV()"><i class="fa-solid fa-download"></i>Export</button>
+              <button class="btn btn-primary btn-sm" onclick="showHome()"><i class="fa-solid fa-plus"></i>New Order</button>
+            </div>
           </div>
           <div class="o-tabs" id="orderTabsEl"></div>
           <div id="bdOrdersList"></div>
@@ -1548,6 +1917,21 @@ img{max-width:100%;display:block;}
             </div>
           </div>
         </div>
+
+        <!-- FAVOURITES PANEL -->
+        <div class="dp" id="dp-b-favs">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+            <div>
+              <h2 style="font-family:var(--display);font-size:1.4rem;color:var(--dark);display:flex;align-items:center;gap:9px;">
+                <i class="fa-solid fa-heart" style="color:var(--red);font-size:1.2rem;"></i>My Favourites
+              </h2>
+              <p style="color:var(--muted);font-size:.84rem;margin-top:3px;">Food items you've saved with ❤️</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showHome()"><i class="fa-solid fa-utensils"></i>Browse More</button>
+          </div>
+          <div id="bdFavsList"></div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1607,6 +1991,103 @@ img{max-width:100%;display:block;}
   </div>
 </div>
 
+<!-- ============================================================
+     CONTACT SELLER MODAL
+============================================================ -->
+<div class="modal-bg" id="contactSellerModal">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h3 id="contactSellerTitle"><i class="fa-solid fa-envelope" style="color:var(--p);margin-right:6px;"></i>Message Seller</h3>
+      <button class="sheet-close" onclick="closeModal('contactSellerModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div id="contactSellerInfo" style="background:var(--light);border-radius:var(--r12);padding:12px 14px;margin-bottom:14px;font-size:.87rem;color:var(--muted);"></div>
+      <div class="field"><label>Your Name *</label><div class="field-wrap"><i class="fi fa-solid fa-user"></i><input type="text" id="csMsgName" placeholder="Your name"/></div></div>
+      <div class="field"><label>Phone Number *</label><div class="field-wrap"><i class="fi fa-solid fa-phone"></i><input type="tel" id="csMsgPhone" placeholder="+880 1XXXXXXXXX"/></div></div>
+      <div class="field"><label>Your Message *</label><div class="field-wrap"><i class="fi fa-solid fa-message"></i><textarea id="csMsgText" placeholder="Ask about delivery area, bulk orders, custom meals…" style="min-height:90px;"></textarea></div></div>
+      <div class="field"><div class="err" id="csMsgErr"></div></div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="sendContactMsg()"><i class="fa-solid fa-paper-plane"></i>Send Message</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FOOD DETAIL MODAL
+============================================================ -->
+<div class="modal-bg" id="foodDetailModal">
+  <div class="modal-sheet" style="max-width:500px;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" style="padding:0 0 24px;">
+      <!-- Hero image area -->
+      <div id="fdHero" style="height:180px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff5ef,var(--light));font-size:5.5rem;position:relative;border-radius:var(--r24) var(--r24) 0 0;flex-shrink:0;">
+        <button class="sheet-close" onclick="closeModal('foodDetailModal')" style="position:absolute;top:14px;right:14px;z-index:10;width:34px;height:34px;background:rgba(255,255,255,.9);box-shadow:var(--sh1);"><i class="fa-solid fa-xmark"></i></button>
+        <span id="fdEmoji">🍽️</span>
+        <div id="fdFavBtn" style="position:absolute;top:14px;left:14px;"></div>
+      </div>
+      <div style="padding:18px 20px 0;">
+        <!-- Tag + seller -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          <span id="fdTag" class="badge badge-orange" style="font-size:.7rem;"></span>
+          <span id="fdSeller" style="font-size:.78rem;color:var(--p);font-weight:700;display:flex;align-items:center;gap:4px;cursor:pointer;"><i class="fa-solid fa-store"></i></span>
+        </div>
+        <!-- Name & rating -->
+        <h2 id="fdName" style="font-family:var(--display);font-size:1.45rem;color:var(--dark);margin-bottom:4px;"></h2>
+        <div id="fdRating" style="display:flex;align-items:center;gap:6px;margin-bottom:10px;"></div>
+        <!-- Description -->
+        <p id="fdDesc" style="font-size:.9rem;color:var(--muted);line-height:1.65;margin-bottom:14px;"></p>
+        <!-- Distance + category -->
+        <div id="fdMeta" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
+        <!-- Divider -->
+        <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
+        <!-- Reviews -->
+        <div id="fdReviews" style="margin-bottom:16px;"></div>
+        <!-- Price + add to cart -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <div id="fdPrice" style="font-size:1.5rem;font-weight:800;color:var(--p);"></div>
+            <div style="font-size:.75rem;color:var(--muted);">per serving</div>
+          </div>
+          <div id="fdCartCtrl" style="display:flex;gap:8px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SELLER DETAIL MODAL
+============================================================ -->
+<div class="modal-bg" id="sellerDetailModal">
+  <div class="modal-sheet" style="max-width:520px;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" style="padding:0 0 28px;">
+      <!-- Seller hero banner -->
+      <div id="sdHero" style="height:140px;background:linear-gradient(135deg,var(--dark2),#3d1a08);display:flex;align-items:flex-end;padding:0 20px 0;position:relative;border-radius:var(--r24) var(--r24) 0 0;flex-shrink:0;">
+        <button class="sheet-close" onclick="closeModal('sellerDetailModal')" style="position:absolute;top:14px;right:14px;z-index:10;background:rgba(255,255,255,.15);color:#fff;border:none;"><i class="fa-solid fa-xmark"></i></button>
+        <div id="sdAvCircle" style="width:60px;height:60px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.4rem;border:3px solid #fff;box-shadow:var(--sh2);transform:translateY(30px);flex-shrink:0;"></div>
+      </div>
+      <div style="padding:38px 20px 0;">
+        <!-- Name + rating -->
+        <h2 id="sdName" style="font-family:var(--display);font-size:1.35rem;color:var(--dark);margin-bottom:3px;"></h2>
+        <div id="sdRating" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"></div>
+        <p id="sdAddr" style="font-size:.83rem;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:4px;"><i class="fa-solid fa-location-dot" style="color:var(--p);"></i></p>
+        <p id="sdDesc" style="font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:14px;"></p>
+        <!-- Stats row -->
+        <div id="sdStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;"></div>
+        <!-- Action buttons -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <button class="btn btn-primary btn-sm" style="flex:1;" id="sdViewMenuBtn"><i class="fa-solid fa-utensils"></i>View Menu</button>
+          <button class="btn btn-ghost btn-sm" id="sdContactBtn"><i class="fa-solid fa-envelope"></i>Message</button>
+        </div>
+        <!-- Menu items from this seller -->
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Menu Highlights</div>
+        <div id="sdMenuItems" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- CART DRAWER -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 <div class="cart-drawer" id="cartDrawer">
@@ -1627,6 +2108,19 @@ img{max-width:100%;display:block;}
     <div class="sheet-head"><h3>Checkout</h3><button class="sheet-close" onclick="closeModal('checkoutModal')"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="sheet-body">
       <div id="checkoutSummary" style="margin-bottom:16px;"></div>
+
+      <!-- Coupon code -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div style="flex:1;display:flex;align-items:center;gap:8px;background:var(--light);border:1.5px solid var(--border);border-radius:var(--r12);padding:9px 14px;transition:border-color .2s;" id="couponWrap">
+          <i class="fa-solid fa-ticket" style="color:var(--p);font-size:.88rem;flex-shrink:0;"></i>
+          <input type="text" id="couponInput" placeholder="Enter promo code (e.g. FIRSTBITE)" 
+            style="flex:1;border:none;background:none;outline:none;font-size:.86rem;color:var(--text);text-transform:uppercase;"
+            oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')applyCoupon()"/>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="applyCoupon()" style="border-radius:var(--r12);padding:9px 16px;">Apply</button>
+      </div>
+      <div id="couponMsg" style="display:none;font-size:.82rem;font-weight:600;margin-bottom:10px;padding:7px 12px;border-radius:var(--r8);"></div>
+
       <div class="pay-section"><h4><i class="fa-solid fa-mobile-screen"></i>Mobile Banking</h4>
         <div class="pay-options">
           <label class="pay-opt"><input type="radio" name="payMethod" value="bKash"/><div class="pay-card"><div class="pay-logo pl-bkash">b</div><div><div class="pay-card-label">bKash</div><div class="pay-card-sub">Mobile payment</div></div></div></label>
@@ -1645,10 +2139,37 @@ img{max-width:100%;display:block;}
           <label class="pay-opt"><input type="radio" name="payMethod" value="Cash on Delivery"/><div class="pay-card"><div class="pay-logo pl-cod"><i class="fa-solid fa-money-bill"></i></div><div><div class="pay-card-label">Cash on Delivery</div><div class="pay-card-sub">Pay when delivered</div></div></div></label>
         </div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--light);border-radius:var(--r12);font-weight:700;margin-bottom:14px;">
-        <span>Grand Total:</span><strong id="checkoutTotal" style="font-size:1.15rem;color:var(--p);">৳0</strong>
+
+      <!-- Order total breakdown -->
+      <div style="background:var(--light);border-radius:var(--r12);padding:12px 16px;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text);margin-bottom:6px;"><span>Subtotal</span><span id="coSubtotal">৳0</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text);margin-bottom:6px;" id="coDeliveryRow"><span>🛵 Delivery</span><span id="coDelivery" style="color:var(--green);">FREE</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--green);margin-bottom:6px;font-weight:600;" id="coDiscountRow" style="display:none;"><span id="coDiscountLabel">Discount</span><span id="coDiscount"></span></div>
+        <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+        <div style="display:flex;justify-content:space-between;font-weight:800;"><span>Grand Total</span><strong id="checkoutTotal" style="font-size:1.15rem;color:var(--p);">৳0</strong></div>
       </div>
       <button class="btn btn-primary btn-full btn-lg" id="placeOrderBtn" onclick="placeOrder()"><i class="fa-solid fa-check-circle"></i>Place Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- RATE ORDER MODAL -->
+<div class="modal-bg modal-center" id="rateModal">
+  <div class="modal-sheet" style="max-width:400px;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><h3>Rate Your Order</h3><button class="sheet-close" onclick="closeModal('rateModal')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="sheet-body" style="text-align:center;padding-top:8px;">
+      <div id="rateOrderInfo" style="font-size:.88rem;color:var(--muted);margin-bottom:16px;"></div>
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;" id="rateStars">
+        <span class="rate-star" data-v="1" onclick="setRating(1)">⭐</span>
+        <span class="rate-star" data-v="2" onclick="setRating(2)">⭐</span>
+        <span class="rate-star" data-v="3" onclick="setRating(3)">⭐</span>
+        <span class="rate-star" data-v="4" onclick="setRating(4)">⭐</span>
+        <span class="rate-star" data-v="5" onclick="setRating(5)">⭐</span>
+      </div>
+      <div id="rateLabel" style="font-size:.88rem;font-weight:600;color:var(--muted);margin-bottom:14px;min-height:20px;"></div>
+      <textarea id="rateComment" placeholder="Tell us about your experience (optional)..." style="width:100%;border:1.5px solid var(--border);border-radius:var(--r12);padding:10px 13px;font-size:.86rem;resize:none;height:80px;outline:none;font-family:var(--font);transition:border-color .2s;" onfocus="this.style.borderColor='var(--p)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      <button class="btn btn-primary btn-full" style="margin-top:14px;" onclick="submitRating()"><i class="fa-solid fa-star"></i>Submit Rating</button>
     </div>
   </div>
 </div>
@@ -1747,9 +2268,25 @@ const getOrdersByBuyer=email=>getOrders().filter(o=>o.buyerEmail===email);
   if(!DB.get("hb_users")){
     setUsers([
       {id:1,name:"Demo Buyer",email:"buyer@test.com",phone:"+8801700001111",role:"buyer",pass:"buyer123",addr:"Mirpur, Dhaka",joined:"2026-01-01"},
-      {id:2,name:"Amma Kitchen",email:"seller1@test.com",phone:"+8801700002222",role:"seller",pass:"seller123",kitchen:"Amma's Kitchen",addr:"Dhanmondi, Dhaka",joined:"2026-01-01"},
-      {id:3,name:"Dhaka Bites",email:"seller2@test.com",phone:"+8801700003333",role:"seller",pass:"seller234",kitchen:"Dhaka Bites",addr:"Gulshan, Dhaka",joined:"2026-01-01"}
+      {id:2,name:"Amma Kitchen",email:"seller1@test.com",phone:"+8801700002222",role:"seller",pass:"seller123",kitchen:"Amma's Kitchen",addr:"Dhanmondi, Dhaka",lat:23.7461,lon:90.3742,joined:"2026-01-01"},
+      {id:3,name:"Dhaka Bites",email:"seller2@test.com",phone:"+8801700003333",role:"seller",pass:"seller234",kitchen:"Dhaka Bites",addr:"Gulshan, Dhaka",lat:23.7808,lon:90.4150,joined:"2026-01-01"}
     ]);
+  } else {
+    // Patch existing sellers that are missing lat/lon (stale localStorage)
+    const SELLER_COORDS={
+      "seller1@test.com":{lat:23.7461,lon:90.3742},
+      "seller2@test.com":{lat:23.7808,lon:90.4150}
+    };
+    const users=getUsers();
+    let patched=false;
+    users.forEach(function(u){
+      if(u.role==="seller"&&(!u.lat||!u.lon)&&SELLER_COORDS[u.email]){
+        u.lat=SELLER_COORDS[u.email].lat;
+        u.lon=SELLER_COORDS[u.email].lon;
+        patched=true;
+      }
+    });
+    if(patched)setUsers(users);
   }
   if(!DB.get("hb_menu")){
     setMenu([
@@ -1794,7 +2331,7 @@ function markMsgRead(id){const msgs=getMsgs();const i=msgs.findIndex(m=>m.id===i
 function fmt(n){return "৳"+n;}
 function genOID(){return "HB-"+new Date().getFullYear()+"-"+(Math.floor(Math.random()*9000)+1000);}
 function fmtDate(d){try{return new Date(d).toLocaleDateString("en-BD",{day:"2-digit",month:"short",year:"numeric"});}catch(e){return d||"";}}
-function statusBadge(s){const m={"Received":"badge-blue","Cooking":"badge-orange","Out for Delivery":"badge-purple","Delivered":"badge-green"};return `<span class="badge ${m[s]||"badge-gray"}">${s}</span>`;}
+function statusBadge(s){const m={"Received":"badge-blue","Cooking":"badge-orange","Out for Delivery":"badge-purple","Delivered":"badge-green","Cancelled":"badge-red"};return `<span class="badge ${m[s]||"badge-gray"}">${s}</span>`;}
 let _toastT;
 function toast(msg,type="",ms=2800){const el=document.getElementById("toast");el.className="toast show"+(type?" "+type:"");el.innerHTML=msg;clearTimeout(_toastT);_toastT=setTimeout(()=>el.classList.remove("show"),ms);}
 
@@ -1817,31 +2354,140 @@ function showPage(id){
   closeMobileMenu();
   const isMain=id==="page-home"||id==="page-track";
   document.getElementById("navbar").style.display=isMain?"block":"none";
-  // Mobile bottom nav: use class so CSS media query still controls desktop visibility
   const mobNav=document.getElementById("mobNav");
   if(mobNav)mobNav.classList.toggle("mob-nav-hidden",!isMain);
-  // Sync bottom nav active state
+  // Update desktop nav active link
+  updateDesktopNav(id);
+  // Sync mobile bottom nav
   if(id==="page-home")updateMobNav("home");
   else if(id==="page-track")updateMobNav("track");
 }
 function showHome(){showPage("page-home");initHome();}
 function showNavbar(){document.getElementById("navbar").style.display="block";}
 
+/* Update desktop nav active link + animate sliding indicator */
+function updateDesktopNav(pageId){
+  const links=document.querySelectorAll(".nl[data-page]");
+  links.forEach(function(lnk){
+    lnk.classList.toggle("active", lnk.dataset.page===pageId);
+  });
+  // Move the sliding pill ::before element
+  const active=document.querySelector(".nl.active");
+  const navLinks=document.getElementById("navLinks");
+  if(active && navLinks){
+    const navRect=navLinks.getBoundingClientRect();
+    const lnkRect=active.getBoundingClientRect();
+    navLinks.style.setProperty("--pill-left",(lnkRect.left-navRect.left)+"px");
+    navLinks.style.setProperty("--pill-width",lnkRect.width+"px");
+    navLinks.classList.add("ready");
+  }
+}
+
 /* ================================================================
    NAVBAR
 ================================================================ */
-window.addEventListener("scroll",()=>document.getElementById("navbar").classList.toggle("scrolled",window.scrollY>40));
+window.addEventListener("scroll",()=>{
+  document.getElementById("navbar").classList.toggle("scrolled",window.scrollY>40);
+  const btt=document.getElementById("backToTop");
+  if(btt)btt.classList.toggle("visible",window.scrollY>400);
+});
+
+document.getElementById("navUserBtn").addEventListener("click",e=>{
+  e.stopPropagation();
+  document.getElementById("navUserDd").classList.toggle("open");
+});
 
 /* closeMobileMenu is a no-op now (bottom nav replaced the overlay) */
 function closeMobileMenu(){}
 
-document.getElementById("navUserBtn").addEventListener("click",e=>{e.stopPropagation();document.getElementById("navUserDd").classList.toggle("open");});
-document.addEventListener("click",()=>document.getElementById("navUserDd").classList.remove("open"));
+/* ── Instant search dropdown ── */
+function onNavSearch(val){
+  renderNavSearchDd(val);
+}
+function onNavSearchFocus(){
+  const val=document.getElementById("navSearch").value;
+  if(val.length>=1) renderNavSearchDd(val);
+}
+function closeNavSearch(){
+  document.getElementById("navSearchDd").classList.remove("open");
+}
 
-document.getElementById("navSearch").addEventListener("input",function(){
-  document.getElementById("menuSearchInput").value=this.value;
-  renderPublicMenu();
-  document.getElementById("allMenuSec").scrollIntoView({behavior:"smooth"});
+function renderNavSearchDd(query){
+  const dd=document.getElementById("navSearchDd");
+  const q=(query||"").toLowerCase().trim();
+  if(!q){ dd.classList.remove("open"); return; }
+
+  const menu=getMenu().filter(i=>i.avail!==false);
+  const sellers=getUsers().filter(u=>u.role==="seller");
+
+  const matchItems=menu.filter(i=>
+    i.name.toLowerCase().includes(q)||
+    i.desc.toLowerCase().includes(q)||
+    (i.seller||"").toLowerCase().includes(q)
+  ).slice(0,5);
+
+  const matchSellers=sellers.filter(s=>
+    (s.kitchen||s.name).toLowerCase().includes(q)||
+    (s.addr||"").toLowerCase().includes(q)
+  ).slice(0,3);
+
+  if(!matchItems.length && !matchSellers.length){
+    dd.innerHTML=`<div class="sd-empty"><i class="fa-solid fa-magnifying-glass" style="opacity:.3;margin-right:6px;"></i>No results for "<strong>${query}</strong>"</div>`;
+    dd.classList.add("open"); return;
+  }
+
+  let html="";
+  if(matchItems.length){
+    html+=`<div class="sd-section"><div class="sd-label"><i class="fa-solid fa-utensils"></i> Food</div>`;
+    html+=matchItems.map(item=>`
+      <div class="sd-item" onclick="navSearchSelect('item',${item.id})">
+        <div class="sd-emoji">${item.emoji||"🍽️"}</div>
+        <div class="sd-info"><strong>${highlight(item.name,q)}</strong><small>${item.seller||"Home Kitchen"}</small></div>
+        <span class="sd-price">৳${item.price}</span>
+      </div>`).join("");
+    html+=`</div>`;
+  }
+  if(matchSellers.length){
+    if(matchItems.length) html+=`<div class="sd-divider"></div>`;
+    html+=`<div class="sd-section"><div class="sd-label"><i class="fa-solid fa-store"></i> Sellers</div>`;
+    html+=matchSellers.map(s=>`
+      <div class="sd-seller-row" onclick="navSearchSelect('seller',${s.id})">
+        <div class="sd-sav">${(s.kitchen||s.name).charAt(0)}</div>
+        <div class="sd-info"><strong>${highlight(s.kitchen||s.name,q)}</strong><small>${s.addr||"Dhaka"}</small></div>
+        <i class="fa-solid fa-chevron-right" style="font-size:.7rem;color:var(--muted);"></i>
+      </div>`).join("");
+    html+=`</div>`;
+  }
+  dd.innerHTML=html;
+  dd.classList.add("open");
+}
+
+function highlight(text, q){
+  const idx=text.toLowerCase().indexOf(q);
+  if(idx<0) return text;
+  return text.substring(0,idx)+'<mark style="background:var(--p4);color:var(--p);border-radius:3px;padding:0 2px;">'+text.substring(idx,idx+q.length)+'</mark>'+text.substring(idx+q.length);
+}
+
+function navSearchSelect(type, id){
+  closeNavSearch();
+  document.getElementById("navSearch").value="";
+  if(type==="item"){
+    document.getElementById("menuSearchInput").value="";
+    showHome();
+    setTimeout(()=>{
+      const item=getMenu().find(i=>i.id===id);
+      if(item){ filterCat(item.cat); document.getElementById("allMenuSec").scrollIntoView({behavior:"smooth"}); }
+    },200);
+  } else {
+    showHome();
+    setTimeout(()=>{ filterSeller(id); },200);
+  }
+}
+
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".nav-search-wrap")) closeNavSearch();
+  if(!e.target.closest("#notifWrap")) document.getElementById("notifPanel")?.classList.remove("open");
+  document.getElementById("navUserDd").classList.remove("open");
 });
 
 function updateNavAuth(){
@@ -1851,6 +2497,10 @@ function updateNavAuth(){
   if(s){
     if(guest)guest.style.display="none";
     if(user)user.style.display="flex";
+    // Show notification bell
+    const notifWrap=document.getElementById("notifWrap");
+    if(notifWrap)notifWrap.style.display="flex";
+    updateNotifBadge();
     document.getElementById("navUserAv").textContent=s.name.charAt(0).toUpperCase();
     document.getElementById("navUserName").textContent=s.name.split(" ")[0];
     document.getElementById("ddFullName").textContent=s.name;
@@ -1868,6 +2518,8 @@ function updateNavAuth(){
   }else{
     if(guest)guest.style.display="flex";
     if(user)user.style.display="none";
+    const notifWrap=document.getElementById("notifWrap");
+    if(notifWrap)notifWrap.style.display="none";
     // Reset mobile Me button
     const mnMe=document.getElementById("mnMe");
     if(mnMe){
@@ -1891,6 +2543,7 @@ let currentCat="all", currentSellerFilter="all", favorites=DB.get("hb_favs")||[]
 function initHome(){
   showNavbar();
   updateNavAuth();
+  updateSellerDistMap();
   renderCats();
   renderSellers();
   renderPublicMenu();
@@ -1922,7 +2575,108 @@ function renderSellerFilter(){
   sel.innerHTML=`<option value="all">All Sellers</option>`+sellers.map(s=>`<option value="${s.id}">${s.kitchen||s.name}</option>`).join("");
 }
 
+/* ── Haversine distance (km) between two lat/lon points ── */
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function fmtDist(km){
+  if(km<1)return Math.round(km*1000)+"m";
+  return km.toFixed(1)+"km";
+}
+function getUserLoc(){
+  const c=DB.get(LOC_KEY);
+  if(c&&typeof c.lat==="number"&&typeof c.lon==="number"&&!isNaN(c.lat)&&!isNaN(c.lon))return c;
+  return null;
+}
+/* Returns distance in km to a seller, or null if no user loc or seller has no coords */
+function sellerDist(seller){
+  const u=getUserLoc();
+  if(!u||!seller.lat||!seller.lon)return null;
+  return haversine(u.lat,u.lon,seller.lat,seller.lon);
+}
+const NEARBY_KM=10; // sellers within 10km = "nearby"
+
 function renderSellers(){
+  const grid=document.getElementById("sellersGrid");
+  if(!grid)return;
+  let sellers=getUsers().filter(u=>u.role==="seller");
+  const menu=getMenu();
+  const orders=getOrders();
+  const userLoc=getUserLoc();
+
+  // Attach distance, sort nearest first
+  sellers=sellers.map(s=>{
+    return Object.assign({},s,{_dist:sellerDist(s)});
+  }).sort((a,b)=>{
+    if(a._dist===null&&b._dist===null)return 0;
+    if(a._dist===null)return 1;
+    if(b._dist===null)return -1;
+    return a._dist-b._dist;
+  });
+
+  // Filter to nearby if user has location
+  let displayed=sellers;
+  let isFiltered=false;
+  if(userLoc){
+    const nearby=sellers.filter(s=>s._dist!==null&&s._dist<=NEARBY_KM);
+    if(nearby.length>0){displayed=nearby;isFiltered=true;}
+  }
+
+  // Update heading
+  const h2=document.getElementById("sellersHeading");
+  const sub=document.getElementById("sellersSub");
+  if(h2)h2.textContent=isFiltered?"Nearby Home Kitchens":"Our Home Kitchens";
+  if(sub)sub.textContent=isFiltered?`Sellers within ${NEARBY_KM}km of your location`:"Real home chefs delivering authentic flavours";
+
+  if(!displayed.length){
+    grid.innerHTML=`<div class="empty-st" style="grid-column:1/-1;">
+      <i class="fa-solid fa-store"></i>
+      <p>${userLoc?"No sellers found near your location.":"No sellers yet."}</p>
+      ${userLoc?`<button class="btn btn-ghost btn-sm" onclick="showAllSellers()">Show All Sellers</button>`:`<button class="btn btn-primary" onclick="showPage('page-seller-register')">Be the first seller!</button>`}
+    </div>`;
+    return;
+  }
+
+  // Show top 3 only on home page
+  const top3=displayed.slice(0,3);
+  const hasMore=displayed.length>3||sellers.length>3;
+
+  // Update "See More" button
+  const seeMoreWrap=document.getElementById("seeMoreSellersWrap");
+  const seeMoreBtn=document.getElementById("seeMoreSellersBtn");
+  if(seeMoreWrap){
+    seeMoreWrap.style.display=hasMore?"block":"none";
+  }
+  if(seeMoreBtn){
+    const remaining=sellers.length-3;
+    seeMoreBtn.innerHTML=`<i class="fa-solid fa-store"></i>See All ${sellers.length} Sellers${remaining>0?" (+"+remaining+" more)":""}`;
+  }
+
+  // Update "View All" link visibility (header link)
+  const viewAllLink=document.getElementById("sellersViewAll");
+  if(viewAllLink){
+    viewAllLink.style.display="inline";
+    viewAllLink.textContent=`View all ${sellers.length} kitchens →`;
+    viewAllLink.onclick=showAllSellers;
+  }
+
+  grid.innerHTML=top3.map(s=>{
+    const items=menu.filter(i=>i.sid===s.id&&i.avail!==false);
+    const delivered=orders.filter(o=>o.sid===s.id&&o.status==="Delivered").length;
+    const distBadge=s._dist!==null
+      ?`<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(255,90,31,.1);color:var(--p);font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:var(--rpill);"><i class="fa-solid fa-location-dot" style="font-size:.62rem;"></i>&nbsp;${fmtDist(s._dist)} away</span>`
+      :"";
+    return buildSellerCard(s, distBadge, items, delivered);
+  }).join("");
+}
+
+function showAllSellers(){
+  const h2=document.getElementById("sellersHeading");
+  const sub=document.getElementById("sellersSub");
+  if(h2)h2.textContent="All Home Kitchens";
+  if(sub)sub.textContent="All sellers on HomeBite";
   const grid=document.getElementById("sellersGrid");
   if(!grid)return;
   const sellers=getUsers().filter(u=>u.role==="seller");
@@ -1931,16 +2685,46 @@ function renderSellers(){
   grid.innerHTML=sellers.map(s=>{
     const items=menu.filter(i=>i.sid===s.id&&i.avail!==false);
     const delivered=orders.filter(o=>o.sid===s.id&&o.status==="Delivered").length;
-    const av=s.kitchen?s.kitchen.charAt(0):s.name.charAt(0);
-    return `<div class="seller-card" onclick="filterSeller(${s.id})">
-      <div class="sc-banner"><div class="sc-banner-overlay"></div><div style="font-size:3rem;position:relative;z-index:1;">${s.kitchen?s.kitchen.charAt(0):"🍳"}</div><div class="sc-av">${av}</div></div>
-      <div class="sc-body">
-        <div class="sc-name">${s.kitchen||s.name}</div>
-        <div class="sc-meta"><span><i class="fa-solid fa-star"></i> 4.9</span><span><i class="fa-solid fa-motorcycle"></i> 30–45 min</span><span><i class="fa-solid fa-receipt"></i> ${delivered} delivered</span></div>
-        <div class="sc-tags">${items.slice(0,3).map(i=>`<span class="sc-tag">${i.emoji} ${i.name}</span>`).join("")}</div>
+    const d=sellerDist(s);
+    const distBadge=d!==null
+      ?`<div style="display:inline-flex;align-items:center;gap:3px;background:rgba(255,90,31,.1);color:var(--p);font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:var(--rpill);"><i class="fa-solid fa-location-dot" style="font-size:.62rem;"></i>&nbsp;${fmtDist(d)} away</div>`
+      :"";
+    return buildSellerCard(s, distBadge, items, delivered);
+  }).join("");
+  // Replace See More button with Show Less
+  const seeMoreWrap=document.getElementById("seeMoreSellersWrap");
+  const seeMoreBtn=document.getElementById("seeMoreSellersBtn");
+  if(seeMoreWrap)seeMoreWrap.style.display="block";
+  if(seeMoreBtn){
+    seeMoreBtn.innerHTML='<i class="fa-solid fa-chevron-up"></i>Show Less';
+    seeMoreBtn.onclick=()=>{ renderSellers(); window.scrollTo({top:document.getElementById("sellers").offsetTop-80,behavior:"smooth"}); };
+  }
+}
+
+function buildSellerCard(s, distBadge, items, delivered){
+  const av=s.kitchen?s.kitchen.charAt(0):s.name.charAt(0);
+  return `<div class="seller-card">
+    <div class="sc-banner" onclick="openSellerDetail(${s.id})" style="cursor:pointer;">
+      <div class="sc-banner-overlay"></div>
+      <div style="font-size:3rem;position:relative;z-index:1;">${s.kitchen?s.kitchen.charAt(0):"🍳"}</div>
+      <div class="sc-av">${av}</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-name">${s.kitchen||s.name}</div>
+      <div class="sc-meta">
+        <span id="scard-rating-${s.id}"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> ${getSellerRating(s.id)}</span>
+        <span><i class="fa-solid fa-motorcycle"></i> 30–45 min</span>
+        <span><i class="fa-solid fa-receipt"></i> ${delivered} delivered</span>
       </div>
-    </div>`;
-  }).join("")||`<div class="empty-st" style="grid-column:1/-1;"><i class="fa-solid fa-store"></i><p>No sellers yet.</p><button class="btn btn-primary" onclick="showPage('page-seller-register')">Be the first seller!</button></div>`;
+      <div class="sc-dist">${distBadge}</div>
+      <div class="sc-tags">${items.slice(0,3).map(i=>`<span class="sc-tag">${i.emoji} ${i.name}</span>`).join("")}</div>
+      <div class="sc-spacer"></div>
+      <div class="sc-actions">
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="filterSeller(${s.id});document.getElementById('allMenuSec').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-utensils"></i>View Menu</button>
+        <button class="btn btn-ghost btn-sm" onclick="openContactSeller(${s.id})" title="Message this seller"><i class="fa-solid fa-envelope"></i></button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function filterSeller(sid){
@@ -1966,24 +2750,70 @@ function renderPublicMenu(){
   if(currentCat!=="all")items=items.filter(i=>i.cat===currentCat);
   if(sid!=="all")items=items.filter(i=>i.sid===parseInt(sid));
   if(search)items=items.filter(i=>i.name.toLowerCase().includes(search)||i.desc.toLowerCase().includes(search)||(i.seller||"").toLowerCase().includes(search));
+
+  // Location-based filtering and sorting
+  const userLoc=getUserLoc();
+  const sellers=getUsers().filter(u=>u.role==="seller");
+  const sellerDistMap={};
+  sellers.forEach(function(s){ sellerDistMap[s.id]=sellerDist(s); });
+
+  if(userLoc&&sid==="all"&&!search){
+    // Filter to nearby sellers if we have location
+    const nearbyIds=sellers.filter(s=>sellerDistMap[s.id]!==null&&sellerDistMap[s.id]<=NEARBY_KM).map(s=>s.id);
+    if(nearbyIds.length>0){
+      items=items.filter(i=>nearbyIds.includes(i.sid));
+    }
+  }
+
+  // Sort by seller distance (nearest first)
+  if(userLoc){
+    items=items.slice().sort(function(a,b){
+      const da=sellerDistMap[a.sid];const db=sellerDistMap[b.sid];
+      if(da===null&&db===null)return 0;
+      if(da===null)return 1;if(db===null)return -1;
+      return da-db;
+    });
+  }
+
   const grid=document.getElementById("publicMenuGrid");
   const empty=document.getElementById("menuEmpty");
-  if(!items.length){grid.innerHTML="";empty.style.display="flex";return;}
+  if(!items.length){
+    grid.innerHTML="";
+    empty.innerHTML=userLoc&&sid==="all"&&!search
+      ?`<i class="fa-solid fa-location-dot"></i><p>No items near your location.</p><button class="btn btn-ghost btn-sm" onclick="currentSellerFilter='all';document.getElementById('menuSellerFilter').value='all';renderPublicMenu()">Show all items</button>`
+      :`<i class="fa-solid fa-bowl-food"></i><p>No items found.</p>`;
+    empty.style.display="flex";
+    return;
+  }
   empty.style.display="none";
-  grid.innerHTML=items.map(item=>{
+
+  // Update section heading based on location filter
+  const titleEl=document.getElementById("menuSectionTitle");
+  const subEl=document.getElementById("menuSectionSub");
+  if(titleEl)titleEl.textContent=(userLoc&&sid==="all"&&!search)?"Nearby Food":"All Items";
+  if(subEl)subEl.textContent=(userLoc&&sid==="all"&&!search)?"Sorted by distance from your location":"Fresh homemade food from all our sellers";
+
+  grid.innerHTML=items.map(function(item){
     const inCart=cart.find(c=>c.id===item.id);
     const isFav=favorites.includes(item.id);
-    return `<div class="food-card">
+    const dist=sellerDistMap[item.sid];
+    const distTag=dist!==null
+      ?`<span style="font-size:.68rem;font-weight:700;color:var(--p);display:flex;align-items:center;gap:3px;margin-bottom:3px;"><i class="fa-solid fa-location-dot" style="font-size:.6rem;"></i>${fmtDist(dist)}</span>`
+      :"";
+    return `<div class="food-card" onclick="openFoodDetail(${item.id})">
       <div class="fc-img"><span style="font-size:3.5rem;">${item.emoji||"🍽️"}</span>
         <div class="fc-fav${isFav?" active":""}" onclick="toggleFav(event,${item.id})" title="Favourite"><i class="fa-${isFav?"solid":"regular"} fa-heart"></i></div>
       </div>
       <div class="fc-body">
         <div class="fc-seller"><i class="fa-solid fa-store"></i>${item.seller||"Home Kitchen"}</div>
+        ${distTag}
         <div class="fc-name">${item.name}</div>
         <div class="fc-desc">${item.desc}</div>
         <div class="fc-foot">
           <div class="fc-price">৳${item.price} <small>/ serving</small></div>
-          ${inCart?`<div class="fc-qty"><button class="fq-btn" onclick="chgQty(${item.id},-1)">−</button><span class="fq-val">${inCart.qty}</span><button class="fq-btn" onclick="chgQty(${item.id},1)">+</button></div>`:`<button class="fc-add" onclick="addToCart(${item.id})" data-id="${item.id}"><i class="fa-solid fa-plus"></i></button>`}
+          ${inCart
+            ?`<div class="fc-qty" onclick="event.stopPropagation()"><button class="fq-btn" onclick="chgQty(${item.id},-1)">−</button><span class="fq-val">${inCart.qty}</span><button class="fq-btn" onclick="chgQty(${item.id},1)">+</button></div>`
+            :`<button class="fc-add" onclick="event.stopPropagation();addToCart(${item.id})" data-id="${item.id}"><i class="fa-solid fa-plus"></i></button>`}
         </div>
       </div>
     </div>`;
@@ -1992,10 +2822,7 @@ function renderPublicMenu(){
 
 function toggleFav(e,id){
   e.stopPropagation();
-  if(favorites.includes(id)){favorites=favorites.filter(f=>f!==id);toast("Removed from favourites");}
-  else{favorites.push(id);toast("❤️ Added to favourites","green");}
-  DB.set("hb_favs",favorites);
-  renderPublicMenu();
+  toggleFavById(id);
 }
 
 /* ================================================================
@@ -2007,17 +2834,25 @@ function cartTotal(){return cart.reduce((s,i)=>s+i.price*i.qty,0);}
 function cartCount(){return cart.reduce((s,i)=>s+i.qty,0);}
 function updateCartBadge(){
   const c=cartCount();
-  // Desktop nav badge
   const nb=document.getElementById("navCartBadge");
-  if(nb)nb.textContent=c;
-  // Mobile bottom nav badge
+  if(nb){
+    nb.textContent=c;
+    // Bump animation
+    nb.classList.remove("bump");
+    if(c>0){ void nb.offsetWidth; nb.classList.add("bump"); }
+  }
   const mb=document.getElementById("mobCartBadge");
   if(mb){mb.textContent=c>9?"9+":c;mb.style.display=c>0?"flex":"none";}
 }
-// Keep updateMobCartBadge as alias for safety
 function updateMobCartBadge(){updateCartBadge();}
 
 function addToCart(id, skipMenuRender){
+  // Must be logged in to add to cart
+  if(!getSession()){
+    toast("Please login or sign up to order food.","red",3000);
+    setTimeout(()=>showPage("page-login"),400);
+    return;
+  }
   const item=getMenu().find(i=>i.id===id);
   if(!item)return;
   const ex=cart.find(i=>i.id===id);
@@ -2086,8 +2921,30 @@ function closeCart(){document.getElementById("cartDrawer").classList.remove("ope
 /* ================================================================
    CHECKOUT & PAYMENT
 ================================================================ */
+/* Active coupon state */
+let _activeCoupon = null;
+const COUPONS = {
+  "FIRSTBITE": {pct:10, label:"10% off (FIRSTBITE)"},
+  "SAVE20":    {pct:20, label:"20% off (SAVE20)"},
+  "HOMEBITE":  {pct:15, label:"15% off (HOMEBITE)"},
+};
+const DELIVERY_FEE = 40;
+const FREE_DELIVERY_ABOVE = 300;
+
 function openCheckout(){
   if(!cart.length){toast("Your cart is empty!","red");return;}
+  if(!getSession()){
+    closeCart();
+    toast("Please login or sign up to place an order.","red",3000);
+    setTimeout(()=>showPage("page-login"),400);
+    return;
+  }
+  _activeCoupon = null;
+  const couponInput = document.getElementById("couponInput");
+  if(couponInput) couponInput.value="";
+  const couponMsg = document.getElementById("couponMsg");
+  if(couponMsg) couponMsg.style.display="none";
+
   const sids=[...new Set(cart.map(i=>i.sid))];
   const sub=document.getElementById("checkoutSummary");
   const sellers=sids.map(sid=>{
@@ -2099,31 +2956,80 @@ function openCheckout(){
       <div style="border-top:1px solid var(--border);margin-top:7px;padding-top:7px;display:flex;justify-content:space-between;font-size:.84rem;font-weight:700;"><span>Subtotal</span><span style="color:var(--p);">${fmt(total)}</span></div>
     </div>`;
   }).join("");
-  sub.innerHTML=sellers+`<div style="padding:4px 0 2px;display:flex;justify-content:space-between;font-size:.85rem;font-weight:600;color:var(--muted);"><span>🛵 Delivery fee</span><span style="color:var(--green);">FREE above ৳300</span></div>`;
-  document.getElementById("checkoutTotal").textContent=fmt(cartTotal());
+  sub.innerHTML=sellers;
   document.querySelectorAll("input[name='payMethod']").forEach(r=>r.checked=false);
+  updateCheckoutTotals();
   closeCart();
   openModal("checkoutModal");
+}
+
+function updateCheckoutTotals(){
+  const subtotal=cartTotal();
+  const delivery=subtotal>=FREE_DELIVERY_ABOVE?0:DELIVERY_FEE;
+  let discount=0;
+  if(_activeCoupon){
+    discount=Math.round(subtotal*_activeCoupon.pct/100);
+  }
+  const grand=subtotal+delivery-discount;
+  const el=id=>document.getElementById(id);
+  if(el("coSubtotal"))el("coSubtotal").textContent=fmt(subtotal);
+  if(el("coDelivery"))el("coDelivery").textContent=delivery===0?'<span style="color:var(--green)">FREE</span>':fmt(delivery);
+  if(el("coDelivery"))el("coDelivery").innerHTML=delivery===0?'<span style="color:var(--green)">FREE</span>':fmt(delivery);
+  const discRow=el("coDiscountRow");
+  if(discRow){
+    discRow.style.display=discount>0?"flex":"none";
+    if(el("coDiscountLabel"))el("coDiscountLabel").textContent=_activeCoupon?.label||"Discount";
+    if(el("coDiscount"))el("coDiscount").textContent="-"+fmt(discount);
+  }
+  if(el("checkoutTotal"))el("checkoutTotal").textContent=fmt(grand);
+  return {subtotal,delivery,discount,grand};
+}
+
+function applyCoupon(){
+  const code=(document.getElementById("couponInput")?.value||"").trim().toUpperCase();
+  const msg=document.getElementById("couponMsg");
+  if(!code){toast("Enter a promo code","red");return;}
+  if(COUPONS[code]){
+    _activeCoupon={...COUPONS[code],code};
+    if(msg){msg.textContent="✅ "+COUPONS[code].label+" applied!";msg.style.cssText="display:block;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;border-radius:var(--r8);padding:7px 12px;font-size:.82rem;font-weight:600;margin-bottom:10px;";}
+    updateCheckoutTotals();
+    toast("🎉 Coupon applied!","green");
+  } else {
+    _activeCoupon=null;
+    if(msg){msg.textContent="❌ Invalid promo code. Try FIRSTBITE, SAVE20 or HOMEBITE";msg.style.cssText="display:block;background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:var(--r8);padding:7px 12px;font-size:.82rem;font-weight:600;margin-bottom:10px;";}
+    updateCheckoutTotals();
+  }
 }
 
 function placeOrder(){
   const sel=document.querySelector("input[name='payMethod']:checked");
   if(!sel){toast("Please select a payment method!","red");return;}
   const s=getSession();
+  const {subtotal,delivery,discount,grand}=updateCheckoutTotals();
   const sids=[...new Set(cart.map(i=>i.sid))];
   const mainOid=genOID();
   sids.forEach((sid,idx)=>{
     const items=cart.filter(i=>i.sid===sid);
-    const total=items.reduce((sum,i)=>sum+i.price*i.qty,0);
+    const itemTotal=items.reduce((sum,i)=>sum+i.price*i.qty,0);
+    // Distribute delivery + discount proportionally across sellers
+    const ratio=itemTotal/subtotal;
+    const sellerTotal=Math.round(itemTotal + delivery*ratio - discount*ratio);
     const oid=idx===0?mainOid:genOID();
-    addOrder({id:oid,buyer:s?s.name:"Guest",buyerEmail:s?s.email:"guest@guest.com",sid,seller:items[0].seller,items:items.map(i=>({name:i.name,qty:i.qty,price:i.price,emoji:i.emoji})),total,payment:sel.value,status:"Received",date:new Date().toISOString().split("T")[0]});
+    addOrder({id:oid,buyer:s.name,buyerEmail:s.email,sid,seller:items[0].seller,
+      items:items.map(i=>({name:i.name,qty:i.qty,price:i.price,emoji:i.emoji})),
+      total:sellerTotal,subtotal:itemTotal,delivery:Math.round(delivery*ratio),
+      discount:Math.round(discount*ratio),coupon:_activeCoupon?.code||null,
+      payment:sel.value,status:"Received",date:new Date().toISOString().split("T")[0]});
   });
+  // Add notification
+  addNotification({type:"order",icon:"orange",text:`Order ${mainOid} placed! Estimated delivery in 30–45 mins.`,time:Date.now()});
   closeModal("checkoutModal");
-  // Show success
   document.getElementById("successOidText").textContent=mainOid+(sids.length>1?` (+${sids.length-1} more)`:"");
   const infoGrid=document.getElementById("successInfoGrid");
-  infoGrid.innerHTML=`<div class="oi-box"><small>Status</small><strong>Order Received ✓</strong></div><div class="oi-box"><small>Payment</small><strong>${sel.value}</strong></div><div class="oi-box"><small>Seller</small><strong>${sids.length>1?sids.length+" sellers":cart.find(i=>i.sid===sids[0])?.seller}</strong></div><div class="oi-box"><small>Est. Delivery</small><strong>30–45 minutes</strong></div>`;
+  const discountLine=discount>0?`<div class="oi-box"><small>Discount</small><strong style="color:var(--green);">-${fmt(discount)}</strong></div>`:"";
+  infoGrid.innerHTML=`<div class="oi-box"><small>Status</small><strong>Order Received ✓</strong></div><div class="oi-box"><small>Payment</small><strong>${sel.value}</strong></div><div class="oi-box"><small>Grand Total</small><strong style="color:var(--p);">${fmt(grand)}</strong></div><div class="oi-box"><small>Delivery</small><strong>${delivery===0?'FREE':fmt(delivery)}</strong></div>${discountLine}`;
   clearCart();
+  _activeCoupon=null;
   openModal("successModal");
 }
 
@@ -2152,7 +3058,7 @@ document.querySelectorAll(".modal-bg").forEach(el=>el.addEventListener("click",f
 /* ================================================================
    ORDER TRACKING
 ================================================================ */
-const STEP_MAP={"Received":1,"Cooking":2,"Out for Delivery":3,"Delivered":4};
+const STEP_MAP={"Received":1,"Cooking":2,"Out for Delivery":3,"Delivered":4,"Cancelled":0};
 const STEP_MSGS=["✅ Order received! Cooking will begin shortly.","🔥 Being freshly prepared in the kitchen!","🛵 Out for delivery! Rider is on the way.","🎉 Delivered! Enjoy your homemade meal!"];
 
 function buildTrackResult(order,step){
@@ -2167,27 +3073,46 @@ function buildTrackResult(order,step){
   return `<div class="track-card"><div class="stepper">${stepHtml}</div><div class="track-status-msg">${STEP_MSGS[step-1]}</div>${riderHtml}${detailHtml}</div>`;
 }
 
+let _trackRefreshTimer = null;
+
 function doTrack(){
   const val=(document.getElementById("trackInputEl").value||"").trim().toUpperCase();
   const result=document.getElementById("trackResult");
   if(!val.startsWith("HB-")){toast("Invalid Order ID. Format: HB-2026-XXXX","red");return;}
+  _renderTrack(val, result);
+  // Auto-refresh every 15s for active orders
+  clearInterval(_trackRefreshTimer);
   const order=getOrders().find(o=>o.id===val);
+  if(order && order.status!=="Delivered"){
+    _trackRefreshTimer=setInterval(()=>{
+      const updated=getOrders().find(o=>o.id===val);
+      if(updated){
+        _renderTrack(val, result);
+        if(updated.status==="Delivered") clearInterval(_trackRefreshTimer);
+      }
+    }, 15000);
+  }
+}
+
+function _renderTrack(val, resultEl){
+  const order=getOrders().find(o=>o.id===val);
+  if(order&&order.status==="Cancelled"){
+    resultEl.style.display="block";
+    resultEl.innerHTML=`<div class="track-card"><div style="text-align:center;padding:20px 0;"><div style="font-size:2.5rem;margin-bottom:10px;">❌</div><h3 style="font-family:var(--display);color:var(--red);margin-bottom:6px;">Order Cancelled</h3><p style="color:var(--muted);font-size:.9rem;">Order ${order.id} was cancelled on ${fmtDate(order.date)}</p></div></div>`;
+    return;
+  }
   let step;
   if(order){step=STEP_MAP[order.status]||1;}
   else{const n=parseInt(val.slice(-1));step=isNaN(n)?1:n<=2?1:n<=5?2:n<=7?3:4;}
-  result.style.display="block";
-  result.innerHTML=buildTrackResult(order,step);
+  resultEl.style.display="block";
+  resultEl.innerHTML=buildTrackResult(order,step);
 }
 
 function doBdTrack(){
   const val=(document.getElementById("bdTrackInput").value||"").trim().toUpperCase();
   const result=document.getElementById("bdTrackResult");
   if(!val.startsWith("HB-")){toast("Invalid Order ID","red");return;}
-  const order=getOrders().find(o=>o.id===val);
-  let step;
-  if(order){step=STEP_MAP[order.status]||1;}
-  else{const n=parseInt(val.slice(-1));step=isNaN(n)?1:n<=2?1:n<=5?2:n<=7?3:4;}
-  result.innerHTML=buildTrackResult(order,step);
+  _renderTrack(val, result);
 }
 
 /* ================================================================
@@ -2257,9 +3182,19 @@ document.getElementById("sellerRegForm").addEventListener("submit",function(e){
   if(users.find(u=>u.email.toLowerCase()===email.toLowerCase())){errEl.textContent="Email already registered.";return;}
   btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Creating...';btn.disabled=true;
   setTimeout(()=>{
+    // Geocode the kitchen address for location-based filtering
     const newU={id:Date.now(),name,email,phone,kitchen,addr,pass,role:"seller",joined:new Date().toISOString().split("T")[0]};
     users.push(newU);setUsers(users);
     saveSession({id:newU.id,name,email,role:"seller",kitchen});
+    // Try to get coordinates for the address in the background
+    const geoUrl="https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Dhaka")+"&format=json&limit=1";
+    fetch(geoUrl,{headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
+      .then(r=>r.json()).then(data=>{
+        if(data&&data[0]){
+          const us=getUsers();const idx=us.findIndex(u=>u.id===newU.id);
+          if(idx>-1){us[idx].lat=parseFloat(data[0].lat);us[idx].lon=parseFloat(data[0].lon);setUsers(us);}
+        }
+      }).catch(()=>{});
     toast(`Seller account created! Welcome, ${name}!`,"green");
     setTimeout(openSellerDash,700);
   },600);
@@ -2287,7 +3222,7 @@ function openSellerDash(){
   sellerPanel("s-overview");
 }
 
-const SPANEL_NAMES={overview:"Overview","s-orders":"My Orders","s-menu":"My Menu","s-messages":"Messages","s-customers":"My Customers"};
+const SPANEL_NAMES={overview:"Overview","s-orders":"My Orders","s-menu":"My Menu","s-messages":"Messages","s-customers":"My Customers","s-profile":"My Profile"};
 function sellerPanel(name){
   document.querySelectorAll("#page-seller-dash .dn[data-p]").forEach(b=>b.classList.remove("active"));
   document.querySelectorAll("#page-seller-dash .dp").forEach(p=>p.classList.remove("active"));
@@ -2303,6 +3238,7 @@ function sellerPanel(name){
   if(name==="s-menu")renderSellerMenu();
   if(name==="s-messages")renderSellerMsgs();
   if(name==="s-customers")renderSellerCustomers();
+  if(name==="s-profile")loadSellerProfile();
 }
 
 function loadSellerOverview(sid){
@@ -2320,11 +3256,14 @@ function loadSellerOverview(sid){
   // recent orders
   const tb=document.getElementById("sRecentOrders");
   tb.innerHTML=orders.slice(0,6).map(o=>`<tr><td><strong>${o.id}</strong></td><td>${o.buyer}</td><td style="font-size:.77rem;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(", ")}</td><td><strong>${fmt(o.total)}</strong></td><td>${statusBadge(o.status)}</td></tr>`).join("")||`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">No orders yet</td></tr>`;
-  // pop chart
+  // pop items chart
   const popEl=document.getElementById("sPopItems");
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const maxC=sorted[0]?sorted[0][1]:1;
   popEl.innerHTML=sorted.length?sorted.map(([n,c])=>`<div class="pop-row"><span class="pop-nm">${n}</span><div class="pop-bar-bg"><div class="pop-bar" style="width:${Math.round(c/maxC*100)}%"></div></div><span class="pop-cnt">${c}</span></div>`).join(""):`<p style="padding:18px;color:var(--muted);text-align:center;font-size:.83rem;">Sales will appear here</p>`;
+  // revenue chart
+  const revChartEl=document.getElementById("sRevChart");
+  if(revChartEl) revChartEl.innerHTML=buildRevenueChart(sid);
 }
 
 function renderSellerOrders(){
@@ -2350,6 +3289,13 @@ function doSaveStatus(){
   const sel=document.querySelector(".so.sel");
   if(!sel){toast("Select a status","red");return;}
   updateOrderStatus(_editOid,sel.dataset.s);
+  // Notify the buyer
+  const order=getOrders().find(o=>o.id===_editOid);
+  if(order){
+    const statusMsgs={"Cooking":"🔥 Your order is being cooked!","Out for Delivery":"🛵 Your order is on the way!","Delivered":"✅ Order delivered! Enjoy your meal."};
+    const msg=statusMsgs[sel.dataset.s];
+    if(msg)addNotification({type:"order",icon:"orange",text:`${order.id}: ${msg}`,time:Date.now()});
+  }
   closeModal("statusModal");
   toast(`✅ Status updated: ${sel.dataset.s}`,"green");
   renderSellerOrders();
@@ -2427,11 +3373,36 @@ function renderSellerMsgs(){
   const s=getSession();if(!s)return;
   const msgs=getMsgsBySeller(s.id);
   const el=document.getElementById("sMsgsList");if(!el)return;
-  el.innerHTML=msgs.length?msgs.map(m=>`<div class="msg-item${m.read?"":" unread"}" onclick="markMsgRead(${m.id});this.classList.remove('unread');this.querySelector('.badge-orange')?.remove();document.getElementById('sdnMsgs').textContent=getMsgsBySeller(getSession().id).filter(x=>!x.read).length;">
+  if(!msgs.length){
+    el.innerHTML=`<div class="empty-st"><i class="fa-solid fa-envelope-open"></i><p>No messages yet</p><p style="font-size:.8rem;">Messages from customers appear here</p></div>`;
+    return;
+  }
+  el.innerHTML=msgs.map(m=>`<div class="msg-item${m.read?"":" unread"}" id="msg-${m.id}" onclick="readSellerMsg(${m.id})">
     <div class="msg-av">${m.name.charAt(0).toUpperCase()}</div>
-    <div class="msg-body"><div class="msg-hd"><strong>${m.name}</strong><small>${m.phone}</small>${m.read?"":'<span class="badge badge-orange" style="font-size:.68rem;">New</span>'}<span class="msg-date">${fmtDate(m.date)}</span></div><p>${m.msg}</p></div>
-    <a href="https://wa.me/${(m.phone||"").replace(/\D/g,"")}" target="_blank" class="btn btn-success btn-sm" style="flex-shrink:0;"><i class="fa-brands fa-whatsapp"></i></a>
-  </div>`).join(""):`<div class="empty-st"><i class="fa-solid fa-envelope-open"></i><p>No messages yet</p></div>`;
+    <div class="msg-body">
+      <div class="msg-hd">
+        <strong>${m.name}</strong>
+        <small>${m.phone}</small>
+        ${m.read?"":'<span class="badge badge-orange" id="msgbadge-'+m.id+'" style="font-size:.68rem;">New</span>'}
+        <span class="msg-date">${fmtDate(m.date)}</span>
+      </div>
+      <p>${m.msg}</p>
+    </div>
+    <a href="https://wa.me/${(m.phone||"").replace(/\D/g,"")}" target="_blank" class="btn btn-success btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation()"><i class="fa-brands fa-whatsapp"></i></a>
+  </div>`).join("");
+}
+
+function readSellerMsg(id){
+  markMsgRead(id);
+  const row=document.getElementById("msg-"+id);
+  if(row)row.classList.remove("unread");
+  const badge=document.getElementById("msgbadge-"+id);
+  if(badge)badge.remove();
+  // Update sidebar badge
+  const s=getSession();if(!s)return;
+  const unread=getMsgsBySeller(s.id).filter(m=>!m.read).length;
+  const sdnMsgs=document.getElementById("sdnMsgs");
+  if(sdnMsgs)sdnMsgs.textContent=unread;
 }
 
 function renderSellerCustomers(){
@@ -2451,7 +3422,7 @@ function renderSellerCustomers(){
 /* ================================================================
    BUYER DASHBOARD
 ================================================================ */
-const BPANEL={home:"Dashboard","b-orders":"My Orders","b-track":"Track Order","b-profile":"My Profile"};
+const BPANEL={home:"Dashboard","b-orders":"My Orders","b-favs":"My Favourites","b-track":"Track Order","b-profile":"My Profile"};
 
 function openBuyerDash(){
   const s=getSession();
@@ -2468,11 +3439,13 @@ function openBuyerDash(){
   document.getElementById("saveProfileBtn").addEventListener("click",saveProfile);
   document.getElementById("savePassBtn").addEventListener("click",savePassword);
   document.getElementById("bdTrackInput").addEventListener("keydown",e=>{if(e.key==="Enter")doBdTrack();});
-  // order tab events
   const tabsEl=document.getElementById("orderTabsEl");
-  const tabData=["all","Received","Cooking","Out for Delivery","Delivered"];
+  const tabData=["all","Received","Cooking","Out for Delivery","Delivered","Cancelled"];
   tabsEl.innerHTML=tabData.map(t=>`<button class="o-tab${t==="all"?" active":""}" data-f="${t}">${t==="all"?"All":t}</button>`).join("");
   tabsEl.querySelectorAll(".o-tab").forEach(tab=>tab.addEventListener("click",function(){tabsEl.querySelectorAll(".o-tab").forEach(t=>t.classList.remove("active"));this.classList.add("active");renderBuyerOrders(this.dataset.f);}));
+  // Update fav badge
+  const favBadge=document.getElementById("bdnFavs");
+  if(favBadge)favBadge.textContent=favorites.length||0;
   buyerPanel("b-home");
 }
 
@@ -2487,6 +3460,7 @@ function buyerPanel(name){
   document.getElementById("buyerSidebar").classList.remove("open");
   if(name==="b-home")loadBuyerHome();
   if(name==="b-orders")renderBuyerOrders("all");
+  if(name==="b-favs")renderBuyerFavs();
   if(name==="b-profile")loadBuyerProfile();
 }
 
@@ -2500,7 +3474,11 @@ function loadBuyerHome(){
   document.getElementById("bs-orders").textContent=orders.length;
   document.getElementById("bs-spent").textContent=fmt(spent);
   document.getElementById("bs-delivered").textContent=delivered.length;
-  document.getElementById("bs-active").textContent=active.length;
+  const bsFavs=document.getElementById("bs-favs");
+  if(bsFavs)bsFavs.textContent=favorites.length||0;
+  // Update sidebar fav badge
+  const bdnFavs=document.getElementById("bdnFavs");
+  if(bdnFavs)bdnFavs.textContent=favorites.length||0;
   // recent orders
   const recentEl=document.getElementById("bdRecentOrders");
   const recent=orders.slice(0,3);
@@ -2536,11 +3514,24 @@ function renderBuyerOrders(filter){
   const menu=getMenu();
   el.innerHTML=orders.length?orders.map(o=>{
     const chips=(o.items||[]).map(i=>{const mi=menu.find(m=>m.name===i.name);return `<div class="ob-chip">${mi?mi.emoji:(i.emoji||"🍽️")} ${i.name} ×${i.qty}</div>`;}).join("");
+    const ratingData=DB.get("hb_rating_"+o.id);
+    const ratingHtml=ratingData
+      ?`<div class="ob-rating">${[1,2,3,4,5].map(n=>`<i class="fa-${n<=ratingData.stars?'solid':'regular'} fa-star"></i>`).join("")}<span>${ratingData.stars}/5</span></div>`
+      :(o.status==="Delivered"?`<button class="ob-btn" onclick="openRateModal('${o.id}')"><i class="fa-regular fa-star"></i> Rate</button>`:"");
+    const cancelBtn=o.status==="Received"?`<button class="ob-btn" style="color:var(--red);border-color:var(--red);" onclick="cancelOrder('${o.id}')"><i class="fa-solid fa-xmark"></i> Cancel</button>`:"";
+    const reorderBtn=o.status!=="Cancelled"?`<button class="ob-btn" onclick="reorderBuyer('${o.id}')"><i class="fa-solid fa-rotate-right"></i> Reorder</button>`:"";
     return `<div class="ob-card">
       <div class="ob-head"><div><div class="ob-id">${o.id}</div><div style="font-size:.75rem;color:var(--muted);margin-top:2px;"><i class="fa-regular fa-calendar" style="margin-right:3px;"></i>${fmtDate(o.date)}</div></div>${statusBadge(o.status)}</div>
       <div class="ob-chips">${chips}</div>
-      <div class="ob-foot"><div class="ob-total">${fmt(o.total)}</div><div class="ob-seller"><i class="fa-solid fa-store"></i>${o.seller}</div>
-      <div class="ob-btns"><button class="ob-btn" onclick="trackFromDash('${o.id}')"><i class="fa-solid fa-location-dot"></i> Track</button><button class="ob-btn" onclick="reorderBuyer('${o.id}')"><i class="fa-solid fa-rotate-right"></i> Reorder</button></div></div>
+      <div class="ob-foot">
+        <div><div class="ob-total">${fmt(o.total)}</div><div class="ob-seller"><i class="fa-solid fa-store"></i>${o.seller}</div></div>
+        <div class="ob-btns">
+          ${cancelBtn}
+          <button class="ob-btn" onclick="trackFromDash('${o.id}')"><i class="fa-solid fa-location-dot"></i> Track</button>
+          ${reorderBtn}
+          ${ratingHtml}
+        </div>
+      </div>
     </div>`;
   }).join(""):`<div class="empty-st"><i class="fa-solid fa-receipt"></i><p>${filter==="all"?"No orders yet.":"No "+filter+" orders."}</p><button class="btn btn-primary btn-sm" onclick="showHome()">Order Now</button></div>`;
 }
@@ -2583,6 +3574,61 @@ function loadBuyerProfile(){
   }
 }
 
+function renderBuyerFavs(){
+  const el=document.getElementById("bdFavsList");
+  if(!el)return;
+  // Update sidebar badge
+  const badge=document.getElementById("bdnFavs");
+  if(badge)badge.textContent=favorites.length||0;
+  if(!favorites.length){
+    el.innerHTML=`<div class="empty-st" style="padding:60px 20px;">
+      <i class="fa-regular fa-heart" style="font-size:3.5rem;opacity:.2;margin-bottom:14px;color:var(--red);"></i>
+      <p style="font-size:.95rem;font-weight:600;color:var(--muted);">No favourites yet</p>
+      <p style="font-size:.84rem;color:var(--muted);margin-bottom:20px;">Tap the ❤️ on any food card to save it here</p>
+      <button class="btn btn-primary" onclick="showHome()"><i class="fa-solid fa-utensils"></i>Browse Food</button>
+    </div>`;
+    return;
+  }
+  const menu=getMenu();
+  const favItems=favorites.map(id=>menu.find(i=>i.id===id)).filter(Boolean);
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+      ${favItems.map(item=>{
+        const inCart=cart.find(c=>c.id===item.id);
+        return `<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1);transition:all .2s;" onmouseover="this.style.borderColor='var(--p)';this.style.boxShadow='var(--sh2)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow='var(--sh1)'">
+          <div style="height:120px;background:linear-gradient(135deg,#fff5ef,var(--light));display:flex;align-items:center;justify-content:center;font-size:3.2rem;position:relative;">
+            ${item.emoji||"🍽️"}
+            <button onclick="removeFav(${item.id})" title="Remove from favourites" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:#fee2e2;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.78rem;color:var(--red);transition:all .2s;" onmouseover="this.style.background='var(--red)';this.style.color='#fff'" onmouseout="this.style.background='#fee2e2';this.style.color='var(--red)'"><i class="fa-solid fa-heart-crack"></i></button>
+          </div>
+          <div style="padding:12px 14px 14px;">
+            <div style="font-size:.72rem;color:var(--p);font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:4px;"><i class="fa-solid fa-store"></i>${item.seller||"Home Kitchen"}</div>
+            <div style="font-weight:700;font-size:.95rem;color:var(--dark);margin-bottom:4px;">${item.name}</div>
+            <div style="font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${item.desc}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:1.05rem;font-weight:800;color:var(--p);">৳${item.price}</span>
+              ${inCart
+                ?`<div style="display:flex;align-items:center;gap:6px;"><button class="fq-btn" onclick="chgQty(${item.id},-1)">−</button><span style="font-weight:700;font-size:.9rem;color:var(--dark);">${inCart.qty}</span><button class="fq-btn" onclick="chgQty(${item.id},1)">+</button></div>`
+                :`<button class="fc-add" onclick="addToCart(${item.id});renderBuyerFavs()" title="Add to cart"><i class="fa-solid fa-plus"></i></button>`
+              }
+            </div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--light);border-radius:var(--r12);font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:7px;">
+      <i class="fa-solid fa-circle-info" style="color:var(--p);"></i>
+      ${favorites.length} item${favorites.length!==1?"s":""} saved — tap ❤️ on any food card to add more
+    </div>`;
+}
+
+function removeFav(id){
+  favorites=favorites.filter(f=>f!==id);
+  DB.set("hb_favs",favorites);
+  renderBuyerFavs();
+  renderPublicMenu();
+  toast("Removed from favourites");
+}
+
 function saveProfile(){
   const s=getSession();
   const users=getUsers();
@@ -2622,6 +3668,611 @@ function savePassword(){
 }
 
 /* ================================================================
+   EXPORT ORDERS CSV (buyer)
+================================================================ */
+function exportOrdersCSV(){
+  const s=getSession();if(!s)return;
+  const orders=getOrdersByBuyer(s.email);
+  if(!orders.length){toast("No orders to export.","red");return;}
+  const rows=[
+    ["Order ID","Date","Seller","Items","Total","Payment","Status"],
+    ...orders.map(o=>[
+      o.id,
+      fmtDate(o.date),
+      o.seller,
+      (o.items||[]).map(i=>i.name+" x"+i.qty).join(" | "),
+      o.total,
+      o.payment,
+      o.status
+    ])
+  ];
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="homebite-orders.csv";
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast("✅ Orders exported as CSV!","green");
+}
+
+/* ================================================================
+   SELLER REVENUE CHART (visual CSS bars)
+================================================================ */
+function buildRevenueChart(sid){
+  const orders=getOrdersBySeller(sid).filter(o=>o.status==="Delivered");
+  // Group by last 7 days
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const key=d.toISOString().split("T")[0];
+    const label=d.toLocaleDateString("en-BD",{weekday:"short"});
+    const rev=orders.filter(o=>o.date===key).reduce((s,o)=>s+o.total,0);
+    days.push({label,rev});
+  }
+  const max=Math.max(...days.map(d=>d.rev),1);
+  return `<div style="display:flex;align-items:flex-end;gap:6px;height:80px;padding:0 4px;">
+    ${days.map(d=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="width:100%;background:var(--p);border-radius:3px 3px 0 0;height:${Math.round(d.rev/max*68)+4}px;min-height:4px;transition:height .4s;opacity:${d.rev>0?1:0.2};" title="৳${d.rev}"></div>
+      <span style="font-size:.62rem;color:var(--muted);font-weight:600;">${d.label}</span>
+    </div>`).join("")}
+  </div>
+  <div style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:4px;">Revenue last 7 days (delivered orders)</div>`;
+}
+
+/* ================================================================
+   DYNAMIC RATINGS — compute from stored hb_rating_* entries
+================================================================ */
+function getAllRatings(){
+  // Returns array of {oid, stars, comment, date}
+  const ratings=[];
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    if(key&&key.startsWith("hb_rating_")){
+      try{
+        const oid=key.replace("hb_rating_","");
+        const data=JSON.parse(localStorage.getItem(key));
+        if(data&&data.stars) ratings.push({oid,...data});
+      }catch(e){}
+    }
+  }
+  return ratings;
+}
+
+function getSellerRating(sid){
+  // Average rating across all delivered orders from this seller
+  const orders=getOrdersBySeller(sid).filter(o=>o.status==="Delivered");
+  const ratings=orders.map(o=>DB.get("hb_rating_"+o.id)).filter(r=>r&&r.stars);
+  if(!ratings.length) return "New";
+  const avg=ratings.reduce((s,r)=>s+r.stars,0)/ratings.length;
+  return avg.toFixed(1);
+}
+
+function getItemRating(itemName){
+  // Ratings for a specific menu item across all orders
+  const orders=getOrders().filter(o=>o.status==="Delivered");
+  const relevant=orders.filter(o=>(o.items||[]).some(i=>i.name===itemName));
+  const ratings=relevant.map(o=>DB.get("hb_rating_"+o.id)).filter(r=>r&&r.stars);
+  if(!ratings.length) return null;
+  const avg=ratings.reduce((s,r)=>s+r.stars,0)/ratings.length;
+  return {avg:parseFloat(avg.toFixed(1)), count:ratings.length, reviews:ratings.filter(r=>r.comment)};
+}
+
+function renderStars(avg, count, size="1rem"){
+  if(!avg) return `<span style="font-size:.8rem;color:var(--muted);">No ratings yet</span>`;
+  const full=Math.floor(avg), half=avg-full>=0.5?1:0, empty=5-full-half;
+  const stars=
+    '<i class="fa-solid fa-star" style="color:#f59e0b;font-size:'+size+'"></i>'.repeat(full)+
+    (half?'<i class="fa-solid fa-star-half-stroke" style="color:#f59e0b;font-size:'+size+'"></i>':'')+
+    '<i class="fa-regular fa-star" style="color:#f59e0b;font-size:'+size+'"></i>'.repeat(empty);
+  return `${stars}<span style="font-size:.82rem;font-weight:700;color:var(--dark);margin-left:5px;">${avg}</span><span style="font-size:.78rem;color:var(--muted);margin-left:3px;">(${count} review${count!==1?"s":""})</span>`;
+}
+
+/* ================================================================
+   FOOD DETAIL MODAL
+================================================================ */
+function openFoodDetail(id){
+  const item=getMenu().find(i=>i.id===id);
+  if(!item)return;
+  const isFav=favorites.includes(id);
+  const inCart=cart.find(c=>c.id===id);
+  const rating=getItemRating(item.name);
+  const dist=sellerDistMap?.[item.sid]||null;
+
+  // Hero
+  document.getElementById("fdEmoji").textContent=item.emoji||"🍽️";
+
+  // Fav button
+  document.getElementById("fdFavBtn").innerHTML=
+    `<button onclick="toggleFavDetail(event,${id})" id="fdFavBtnInner" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:var(--sh1);" class="${isFav?"active":""}">
+      <i class="fa-${isFav?"solid":"regular"} fa-heart" style="color:${isFav?"var(--red)":"var(--muted)"}"></i>
+    </button>`;
+
+  // Tag + seller
+  const tagEl=document.getElementById("fdTag");
+  if(item.tag){tagEl.textContent=item.tag;tagEl.style.display="inline-flex";}
+  else tagEl.style.display="none";
+  document.getElementById("fdSeller").innerHTML=
+    `<i class="fa-solid fa-store"></i>${item.seller||"Home Kitchen"}`;
+  document.getElementById("fdSeller").onclick=()=>{closeModal("foodDetailModal");setTimeout(()=>openSellerDetail(item.sid),200);};
+
+  // Name
+  document.getElementById("fdName").textContent=item.name;
+
+  // Dynamic rating
+  document.getElementById("fdRating").innerHTML=rating
+    ?renderStars(rating.avg,rating.count)
+    :`<span style="font-size:.8rem;color:var(--muted);">No ratings yet</span>`;
+
+  // Description
+  document.getElementById("fdDesc").textContent=item.desc;
+
+  // Meta chips
+  const meta=[];
+  if(dist!==null) meta.push(`<span class="badge badge-orange"><i class="fa-solid fa-location-dot"></i> ${fmtDist(dist)}</span>`);
+  const catLabels={rice:"Rice & Biryani",curry:"Curries",bread:"Bread",dessert:"Desserts",drinks:"Drinks",snacks:"Snacks"};
+  if(item.cat) meta.push(`<span class="badge badge-gray"><i class="fa-solid fa-tag"></i> ${catLabels[item.cat]||item.cat}</span>`);
+  meta.push(`<span class="badge badge-blue"><i class="fa-solid fa-motorcycle"></i> 30–45 min</span>`);
+  document.getElementById("fdMeta").innerHTML=meta.join("");
+
+  // Reviews
+  const reviewsEl=document.getElementById("fdReviews");
+  if(rating&&rating.reviews.length){
+    reviewsEl.innerHTML=`<div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Customer Reviews</div>`+
+      rating.reviews.slice(0,3).map(r=>`
+        <div style="background:var(--light);border-radius:var(--r12);padding:10px 13px;margin-bottom:7px;">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+            ${'<i class="fa-solid fa-star" style="color:#f59e0b;font-size:.72rem;"></i>'.repeat(r.stars)}
+            <span style="font-size:.74rem;color:var(--muted);margin-left:4px;">${fmtDate(r.date)}</span>
+          </div>
+          <p style="font-size:.83rem;color:var(--dark);line-height:1.5;">${r.comment}</p>
+        </div>`).join("");
+  } else {
+    reviewsEl.innerHTML="";
+  }
+
+  // Price
+  document.getElementById("fdPrice").textContent=fmt(item.price);
+
+  // Cart controls
+  const cartCtrl=document.getElementById("fdCartCtrl");
+  if(inCart){
+    cartCtrl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;">
+      <button class="fq-btn" onclick="chgQty(${id},-1);refreshFoodDetailCart(${id})">−</button>
+      <span style="font-weight:700;font-size:1rem;color:var(--dark);min-width:20px;text-align:center;" id="fdCartQty">${inCart.qty}</span>
+      <button class="fq-btn" onclick="chgQty(${id},1);refreshFoodDetailCart(${id})">+</button>
+    </div>`;
+  } else {
+    cartCtrl.innerHTML=`<button class="btn btn-primary" onclick="addToCart(${id});refreshFoodDetailCart(${id})"><i class="fa-solid fa-bag-shopping"></i>Add to Cart</button>`;
+  }
+
+  openModal("foodDetailModal");
+}
+
+function refreshFoodDetailCart(id){
+  // Update cart controls inside the open detail modal
+  const inCart=cart.find(c=>c.id===id);
+  const cartCtrl=document.getElementById("fdCartCtrl");
+  if(!cartCtrl)return;
+  if(inCart){
+    cartCtrl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;">
+      <button class="fq-btn" onclick="chgQty(${id},-1);refreshFoodDetailCart(${id})">−</button>
+      <span style="font-weight:700;font-size:1rem;color:var(--dark);min-width:20px;text-align:center;" id="fdCartQty">${inCart.qty}</span>
+      <button class="fq-btn" onclick="chgQty(${id},1);refreshFoodDetailCart(${id})">+</button>
+    </div>`;
+  } else {
+    cartCtrl.innerHTML=`<button class="btn btn-primary" onclick="addToCart(${id});refreshFoodDetailCart(${id})"><i class="fa-solid fa-bag-shopping"></i>Add to Cart</button>`;
+  }
+}
+
+function toggleFavDetail(e,id){
+  e.stopPropagation();
+  toggleFavById(id);
+  // Update the heart icon inside the modal
+  const btn=document.getElementById("fdFavBtnInner");
+  const isFav=favorites.includes(id);
+  if(btn) btn.innerHTML=`<i class="fa-${isFav?"solid":"regular"} fa-heart" style="color:${isFav?"var(--red)":"var(--muted)"}"></i>`;
+}
+
+function toggleFavById(id){
+  if(favorites.includes(id)){favorites=favorites.filter(f=>f!==id);toast("Removed from favourites");}
+  else{favorites.push(id);toast("❤️ Added to favourites","green");}
+  DB.set("hb_favs",favorites);
+  const badge=document.getElementById("bdnFavs");
+  if(badge)badge.textContent=favorites.length||0;
+  renderPublicMenu();
+}
+
+/* Build sellerDistMap used inside openFoodDetail */
+let sellerDistMap={};
+function updateSellerDistMap(){
+  const sellers=getUsers().filter(u=>u.role==="seller");
+  sellerDistMap={};
+  sellers.forEach(s=>{ sellerDistMap[s.id]=sellerDist(s); });
+}
+
+/* ================================================================
+   SELLER DETAIL MODAL
+================================================================ */
+function openSellerDetail(sid){
+  const seller=getUsers().find(u=>u.id===sid);
+  if(!seller)return;
+  const menu=getMenuBySeller(sid).filter(i=>i.avail!==false);
+  const orders=getOrdersBySeller(sid);
+  const delivered=orders.filter(o=>o.status==="Delivered").length;
+  const ratingVal=getSellerRating(sid);
+  const ratingNum=parseFloat(ratingVal);
+  const ratings=orders.filter(o=>o.status==="Delivered")
+    .map(o=>DB.get("hb_rating_"+o.id)).filter(r=>r&&r.stars);
+
+  // Avatar
+  const av=(seller.kitchen||seller.name).charAt(0).toUpperCase();
+  document.getElementById("sdAvCircle").textContent=av;
+
+  // Name + rating
+  document.getElementById("sdName").textContent=seller.kitchen||seller.name;
+  document.getElementById("sdRating").innerHTML=ratings.length
+    ?renderStars(ratingNum,ratings.length)
+    :`<span class="badge badge-gray">New Seller</span>`;
+
+  // Address + desc
+  document.getElementById("sdAddr").innerHTML=`<i class="fa-solid fa-location-dot" style="color:var(--p);"></i>${seller.addr||"Dhaka, Bangladesh"}`;
+  document.getElementById("sdDesc").textContent=seller.desc||"Authentic homemade food crafted with love.";
+
+  // Stats
+  const dist=sellerDist(seller);
+  document.getElementById("sdStats").innerHTML=`
+    <div style="background:var(--light);border-radius:var(--r12);padding:12px;text-align:center;">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--p);">${menu.length}</div>
+      <div style="font-size:.72rem;color:var(--muted);font-weight:600;">Menu Items</div>
+    </div>
+    <div style="background:var(--light);border-radius:var(--r12);padding:12px;text-align:center;">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--green);">${delivered}</div>
+      <div style="font-size:.72rem;color:var(--muted);font-weight:600;">Delivered</div>
+    </div>
+    <div style="background:var(--light);border-radius:var(--r12);padding:12px;text-align:center;">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--dark);">${dist!==null?fmtDist(dist):"–"}</div>
+      <div style="font-size:.72rem;color:var(--muted);font-weight:600;">Distance</div>
+    </div>`;
+
+  // Action buttons
+  document.getElementById("sdViewMenuBtn").onclick=()=>{closeModal("sellerDetailModal");filterSeller(sid);document.getElementById("allMenuSec").scrollIntoView({behavior:"smooth"});};
+  document.getElementById("sdContactBtn").onclick=()=>{closeModal("sellerDetailModal");setTimeout(()=>openContactSeller(sid),200);};
+
+  // Menu highlights (first 5 items)
+  document.getElementById("sdMenuItems").innerHTML=menu.slice(0,5).map(item=>{
+    const inCart=cart.find(c=>c.id===item.id);
+    const itemRating=getItemRating(item.name);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:border-color .2s;" onclick="closeModal('sellerDetailModal');setTimeout(()=>openFoodDetail(${item.id}),200);">
+      <div style="width:42px;height:42px;background:var(--light);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">${item.emoji||"🍽️"}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.88rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+        ${itemRating?`<div style="font-size:.72rem;color:#f59e0b;">${"★".repeat(Math.round(itemRating.avg))} <span style="color:var(--muted)">${itemRating.avg} (${itemRating.count})</span></div>`:`<div style="font-size:.72rem;color:var(--muted);">No ratings yet</div>`}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span style="font-size:.95rem;font-weight:800;color:var(--p);">${fmt(item.price)}</span>
+        <button onclick="event.stopPropagation();${inCart?`chgQty(${item.id},1)`:`addToCart(${item.id})`};renderSellerDetailMenu(${sid})" style="width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;"><i class="fa-solid ${inCart?"fa-plus":"fa-plus"}"></i></button>
+      </div>
+    </div>`;
+  }).join("")||`<div style="text-align:center;padding:18px;color:var(--muted);font-size:.87rem;">No menu items yet</div>`;
+
+  openModal("sellerDetailModal");
+}
+
+function renderSellerDetailMenu(sid){
+  // Re-render just the menu items inside the open seller detail
+  const menu=getMenuBySeller(sid).filter(i=>i.avail!==false);
+  const container=document.getElementById("sdMenuItems");
+  if(!container)return;
+  container.innerHTML=menu.slice(0,5).map(item=>{
+    const inCart=cart.find(c=>c.id===item.id);
+    const itemRating=getItemRating(item.name);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:border-color .2s;" onclick="closeModal('sellerDetailModal');setTimeout(()=>openFoodDetail(${item.id}),200);">
+      <div style="width:42px;height:42px;background:var(--light);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">${item.emoji||"🍽️"}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.88rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+        ${itemRating?`<div style="font-size:.72rem;color:#f59e0b;">${"★".repeat(Math.round(itemRating.avg))} <span style="color:var(--muted)">${itemRating.avg} (${itemRating.count})</span></div>`:`<div style="font-size:.72rem;color:var(--muted);">No ratings yet</div>`}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span style="font-size:.95rem;font-weight:800;color:var(--p);">${fmt(item.price)}</span>
+        <button onclick="event.stopPropagation();${inCart?`chgQty(${item.id},1)`:`addToCart(${item.id})`};renderSellerDetailMenu(${sid})" style="width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;"><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ================================================================
+   CONTACT SELLER
+================================================================ */
+let _contactSellerId = null;
+
+function openContactSeller(sid){
+  _contactSellerId = sid;
+  const seller = getUsers().find(u=>u.id===sid);
+  if(!seller) return;
+  const title = document.getElementById("contactSellerTitle");
+  const info  = document.getElementById("contactSellerInfo");
+  if(title) title.innerHTML = `<i class="fa-solid fa-envelope" style="color:var(--p);margin-right:6px;"></i>Message ${seller.kitchen||seller.name}`;
+  if(info)  info.innerHTML  = `<i class="fa-solid fa-store" style="color:var(--p);margin-right:6px;"></i><strong>${seller.kitchen||seller.name}</strong> &nbsp;·&nbsp; ${seller.addr||"Dhaka"}`;
+  // Pre-fill name/phone if user is logged in
+  const s = getSession();
+  const nameEl  = document.getElementById("csMsgName");
+  const phoneEl = document.getElementById("csMsgPhone");
+  if(nameEl && s)  nameEl.value  = s.name  || "";
+  if(phoneEl && s) phoneEl.value = (getUsers().find(u=>u.id===s.id)||{}).phone || "";
+  // Clear previous message
+  const msgEl = document.getElementById("csMsgText");
+  if(msgEl) msgEl.value = "";
+  const errEl = document.getElementById("csMsgErr");
+  if(errEl) errEl.textContent = "";
+  openModal("contactSellerModal");
+}
+
+function sendContactMsg(){
+  const name  = (document.getElementById("csMsgName")?.value  || "").trim();
+  const phone = (document.getElementById("csMsgPhone")?.value || "").trim();
+  const msg   = (document.getElementById("csMsgText")?.value  || "").trim();
+  const errEl = document.getElementById("csMsgErr");
+  if(!name)  { if(errEl) errEl.textContent="Please enter your name."; return; }
+  if(!phone) { if(errEl) errEl.textContent="Please enter your phone number."; return; }
+  if(!msg)   { if(errEl) errEl.textContent="Please write a message."; return; }
+  addMsg({ sid:_contactSellerId, name, phone, msg });
+  closeModal("contactSellerModal");
+  toast("✅ Message sent to the seller!","green",3000);
+}
+
+/* ================================================================
+   ORDER CANCELLATION
+================================================================ */
+function cancelOrder(oid){
+  if(!confirm(`Cancel order ${oid}? This action cannot be undone.`))return;
+  const order=getOrders().find(o=>o.id===oid);
+  if(!order||order.status!=="Received"){toast("Order cannot be cancelled at this stage.","red");return;}
+  updateOrderStatus(oid,"Cancelled");
+  addNotification({type:"cancel",icon:"blue",text:`Order ${oid} has been cancelled.`,time:Date.now()});
+  toast("Order cancelled.","blue");
+  renderBuyerOrders(document.querySelector("#orderTabsEl .o-tab.active")?.dataset.f||"all");
+}
+
+/* ================================================================
+   RATINGS
+================================================================ */
+let _rateOid=null, _rateVal=0;
+
+function openRateModal(oid){
+  _rateOid=oid;_rateVal=0;
+  const order=getOrders().find(o=>o.id===oid);
+  const infoEl=document.getElementById("rateOrderInfo");
+  if(infoEl&&order)infoEl.innerHTML=`<i class="fa-solid fa-store" style="color:var(--p);margin-right:5px;"></i><strong>${order.seller}</strong> · ${order.id}`;
+  document.querySelectorAll(".rate-star").forEach(s=>s.classList.remove("active"));
+  const commentEl=document.getElementById("rateComment");
+  if(commentEl)commentEl.value="";
+  const labelEl=document.getElementById("rateLabel");
+  if(labelEl)labelEl.textContent="";
+  openModal("rateModal");
+}
+function setRating(val){
+  _rateVal=val;
+  const labels=["","😞 Poor","😐 Fair","🙂 Good","😊 Great","🤩 Excellent!"];
+  document.querySelectorAll(".rate-star").forEach((s,i)=>s.classList.toggle("active",i<val));
+  const labelEl=document.getElementById("rateLabel");
+  if(labelEl){labelEl.textContent=labels[val]||"";labelEl.style.color=val>=4?"var(--green)":val>=3?"var(--amber)":"var(--red)";}
+}
+function submitRating(){
+  if(!_rateVal){toast("Please select a star rating.","red");return;}
+  const comment=document.getElementById("rateComment")?.value.trim()||"";
+  DB.set("hb_rating_"+_rateOid,{stars:_rateVal,comment,date:new Date().toISOString().split("T")[0]});
+  closeModal("rateModal");
+  toast("⭐ Thank you for your feedback!","green");
+  renderBuyerOrders(document.querySelector("#orderTabsEl .o-tab.active")?.dataset.f||"all");
+  // Refresh ratings on home page if visible
+  if(document.getElementById("page-home").classList.contains("active")){
+    renderSellers(); // updates seller star ratings on cards
+  }
+}
+
+/* ================================================================
+   NOTIFICATIONS
+================================================================ */
+const NOTIF_KEY="hb_notifs";
+function getNotifications(){return DB.get(NOTIF_KEY)||[];}
+function addNotification(n){
+  const notifs=getNotifications();
+  n.id=Date.now();n.read=false;
+  notifs.unshift(n);
+  DB.set(NOTIF_KEY,notifs.slice(0,30)); // keep last 30
+  updateNotifBadge();
+}
+function updateNotifBadge(){
+  const notifs=getNotifications();
+  const unread=notifs.filter(n=>!n.read).length;
+  const badge=document.getElementById("notifBadge");
+  if(badge){badge.textContent=unread;badge.style.display=unread>0?"flex":"none";}
+}
+function toggleNotifPanel(){
+  const panel=document.getElementById("notifPanel");
+  if(!panel)return;
+  const isOpen=document.getElementById("notifWrap")?.querySelector(".user-dd-menu")?.classList.contains("open");
+  if(!isOpen){renderNotifPanel();}
+  document.getElementById("notifPanel").classList.toggle("open");
+}
+function renderNotifPanel(){
+  const notifs=getNotifications();
+  const list=document.getElementById("notifList");
+  if(!list)return;
+  // Mark all as read
+  const updated=notifs.map(n=>({...n,read:true}));
+  DB.set(NOTIF_KEY,updated);
+  updateNotifBadge();
+  if(!notifs.length){
+    list.innerHTML=`<div class="udd-item" style="color:var(--muted);font-size:.82rem;justify-content:center;padding:18px;">No notifications</div>`;
+    return;
+  }
+  const icons={order:"orange",cancel:"blue",location:"green"};
+  const faIcons={order:"fa-receipt",cancel:"fa-xmark",location:"fa-location-dot"};
+  list.innerHTML=notifs.slice(0,15).map(n=>{
+    const timeAgo=formatTimeAgo(n.time);
+    return `<div class="notif-item${n.read?"":" unread"}">
+      <div class="notif-ico ${icons[n.type]||'orange'}"><i class="fa-solid ${faIcons[n.type]||'fa-bell'}"></i></div>
+      <div class="notif-body"><p>${n.text}</p><small>${timeAgo}</small></div>
+    </div>`;
+  }).join("");
+}
+function clearNotifications(){
+  DB.set(NOTIF_KEY,[]);updateNotifBadge();
+  const list=document.getElementById("notifList");
+  if(list)list.innerHTML=`<div class="udd-item" style="color:var(--muted);font-size:.82rem;justify-content:center;padding:18px;">No notifications</div>`;
+  document.getElementById("notifPanel")?.classList.remove("open");
+}
+function formatTimeAgo(ts){
+  const diff=Math.floor((Date.now()-ts)/1000);
+  if(diff<60)return "just now";
+  if(diff<3600)return Math.floor(diff/60)+"m ago";
+  if(diff<86400)return Math.floor(diff/3600)+"h ago";
+  return Math.floor(diff/86400)+"d ago";
+}
+
+/* ================================================================
+   SELLER PROFILE
+================================================================ */
+function loadSellerProfile(){
+  const s=getSession();if(!s)return;
+  const users=getUsers();
+  const user=users.find(u=>u.id===s.id);
+  if(!user)return;
+
+  const orders=getOrdersBySeller(s.id);
+  const menu=getMenuBySeller(s.id);
+  const rev=orders.filter(o=>o.status==="Delivered").reduce((sum,o)=>sum+o.total,0);
+
+  // Avatar card
+  const av=(s.kitchen||s.name).charAt(0).toUpperCase();
+  document.getElementById("sProfileAv").textContent=av;
+  document.getElementById("sProfileKitchen").textContent=s.kitchen||s.name;
+  document.getElementById("sProfileEmail").textContent=s.email;
+  document.getElementById("sProfileOrders").textContent=orders.length;
+  document.getElementById("sProfileRev").textContent=fmt(rev);
+  document.getElementById("sProfileItems").textContent=menu.filter(i=>i.avail!==false).length;
+  document.getElementById("sProfileJoined").textContent=fmtDate(user.joined||"");
+
+  // Kitchen status toggle
+  const isOpen=user.kitchenOpen!==false; // default open
+  const toggle=document.getElementById("kitchenToggle");
+  const label=document.getElementById("kitchenStatusLabel");
+  if(toggle)toggle.classList.toggle("on",isOpen);
+  if(label){label.textContent=isOpen?"🟢 Open for Orders":"🔴 Closed — Not accepting orders";label.style.color=isOpen?"var(--green)":"var(--red)";}
+
+  // Edit fields
+  document.getElementById("spKitchen").value=user.kitchen||"";
+  document.getElementById("spName").value=user.name||"";
+  document.getElementById("spPhone").value=user.phone||"";
+  document.getElementById("spEmail").value=user.email||"";
+  document.getElementById("spAddr").value=user.addr||"";
+  document.getElementById("spDesc").value=user.desc||"";
+}
+
+function toggleKitchenStatus(){
+  const s=getSession();if(!s)return;
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.id===s.id);if(idx<0)return;
+  const newStatus=users[idx].kitchenOpen===false?true:false; // toggle
+  users[idx].kitchenOpen=newStatus;
+  setUsers(users);
+  const toggle=document.getElementById("kitchenToggle");
+  const label=document.getElementById("kitchenStatusLabel");
+  if(toggle)toggle.classList.toggle("on",newStatus);
+  if(label){label.textContent=newStatus?"🟢 Open for Orders":"🔴 Closed — Not accepting orders";label.style.color=newStatus?"var(--green)":"var(--red)";}
+  toast(newStatus?"✅ Kitchen is now Open for Orders!":"Kitchen is now Closed.",newStatus?"green":"blue");
+  // Update all seller's menu items availability if closing
+  if(!newStatus){
+    const menu=getMenuBySeller(s.id);
+    menu.forEach(item=>item._kitchenClosed=true);
+  }
+}
+
+function saveSellerProfile(){
+  const s=getSession();
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.id===s.id);if(idx<0)return;
+  const kitchen=document.getElementById("spKitchen").value.trim();
+  const name=document.getElementById("spName").value.trim();
+  const phone=document.getElementById("spPhone").value.trim();
+  const addr=document.getElementById("spAddr").value.trim();
+  const desc=document.getElementById("spDesc").value.trim();
+  if(!kitchen){toast("Kitchen name cannot be empty","red");return;}
+  if(!name){toast("Name cannot be empty","red");return;}
+
+  users[idx].kitchen=kitchen;
+  users[idx].name=name;
+  users[idx].phone=phone;
+  users[idx].addr=addr;
+  users[idx].desc=desc;
+  setUsers(users);
+
+  // Update session
+  const sess=getSession();
+  sess.name=name;sess.kitchen=kitchen;
+  saveSession(sess);
+
+  // Update topbar UI
+  document.getElementById("dsAv").textContent=kitchen.charAt(0).toUpperCase();
+  document.getElementById("dsName").textContent=name;
+  document.getElementById("dsKitchen").textContent=kitchen;
+  document.getElementById("dsTopAv").textContent=kitchen.charAt(0).toUpperCase();
+  document.getElementById("dsTopName").textContent=name;
+  document.getElementById("dsTopKitchen").textContent=kitchen;
+  document.getElementById("sProfileKitchen").textContent=kitchen;
+
+  // Geocode new address in background
+  if(addr&&addr!==users[idx].addr){
+    const geoUrl="https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(addr+", Dhaka")+"&format=json&limit=1";
+    fetch(geoUrl,{headers:{"Accept-Language":"en","User-Agent":"HomeBiteApp/1.0"}})
+      .then(r=>r.json()).then(data=>{
+        if(data&&data[0]){
+          const us=getUsers();const i=us.findIndex(u=>u.id===s.id);
+          if(i>-1){us[i].lat=parseFloat(data[0].lat);us[i].lon=parseFloat(data[0].lon);setUsers(us);}
+        }
+      }).catch(()=>{});
+  }
+  toast("✅ Profile saved!","green");
+  updateNavAuth();
+}
+
+function saveSellerPassword(){
+  const s=getSession();
+  const users=getUsers();
+  const idx=users.findIndex(u=>u.id===s.id);
+  const errEl=document.getElementById("sPassErr");errEl.textContent="";
+  const old=document.getElementById("spOldPass").value;
+  const np=document.getElementById("spNewPass").value;
+  const np2=document.getElementById("spNewPass2").value;
+  if(!old||!np||!np2){errEl.textContent="Fill all password fields.";return;}
+  if(users[idx].pass!==old){errEl.textContent="Current password is incorrect.";return;}
+  if(np.length<6){errEl.textContent="New password must be 6+ characters.";return;}
+  if(np!==np2){errEl.textContent="New passwords do not match.";return;}
+  users[idx].pass=np;setUsers(users);
+  document.getElementById("spOldPass").value="";
+  document.getElementById("spNewPass").value="";
+  document.getElementById("spNewPass2").value="";
+  toast("✅ Password updated!","green");
+}
+
+function deleteSellerAccount(){
+  if(!confirm("Are you sure you want to permanently delete your account and all your data? This cannot be undone."))return;
+  if(!confirm("⚠️ Final warning: all your menu items, orders and messages will be deleted forever."))return;
+  const s=getSession();
+  // Remove user
+  setUsers(getUsers().filter(u=>u.id!==s.id));
+  // Remove their menu items
+  setMenu(getMenu().filter(i=>i.sid!==s.id));
+  // Remove their messages
+  setMsgs(getMsgs().filter(m=>m.sid!==s.id));
+  clearSession();
+  showHome();
+  toast("Account deleted. We're sorry to see you go.","blue",4000);
+}
+
+/* ================================================================
    MOBILE BOTTOM NAV
 ================================================================ */
 function updateMobNav(active){
@@ -2648,8 +4299,9 @@ document.addEventListener("DOMContentLoaded",function(){
   initHome();
   const s=getSession();
   if(s){updateNavAuth();}
-  // Auto-detect location on load
   initLocation();
+  // Initialize desktop nav indicator after layout settles
+  setTimeout(function(){ updateDesktopNav("page-home"); }, 50);
 });
 
 /* ================================================================
@@ -2663,8 +4315,19 @@ document.addEventListener("DOMContentLoaded",function(){
 ================================================================ */
 const LOC_KEY    = "hb_location";
 const LOC_MAX_MS = 30 * 60 * 1000;
-const LOC_AREAS  = ["Mirpur","Dhanmondi","Gulshan","Uttara","Mohammadpur",
-                    "Banani","Bashundhara","Old Dhaka","Tejgaon","Motijheel"];
+/* Quick-select Dhaka areas with real coordinates */
+const LOC_AREAS = [
+  {name:"Mirpur",       lat:23.8103, lon:90.3649},
+  {name:"Dhanmondi",    lat:23.7461, lon:90.3742},
+  {name:"Gulshan",      lat:23.7808, lon:90.4150},
+  {name:"Uttara",       lat:23.8760, lon:90.3795},
+  {name:"Mohammadpur",  lat:23.7644, lon:90.3534},
+  {name:"Banani",       lat:23.7937, lon:90.4043},
+  {name:"Bashundhara",  lat:23.8141, lon:90.4239},
+  {name:"Old Dhaka",    lat:23.7104, lon:90.4074},
+  {name:"Tejgaon",      lat:23.7589, lon:90.3943},
+  {name:"Motijheel",    lat:23.7330, lon:90.4192}
+];
 
 function initLocation(){
   const cached = DB.get(LOC_KEY);
@@ -2688,9 +4351,9 @@ function requestLocation(){
 
 function openLocModal(){
   const qa = document.getElementById("locQuickAreas");
-  if(qa && !qa.children.length){
+  if(qa){
     qa.innerHTML = LOC_AREAS.map(function(a){
-      return '<button onclick="setManualLocation(\''+a+', Dhaka\')" style="padding:5px 12px;border-radius:var(--rpill);font-size:.78rem;font-weight:600;background:var(--light);border:1.5px solid var(--border);cursor:pointer;color:var(--text);font-family:var(--font);transition:all .2s;" onmouseover="this.style.borderColor=\'var(--p)\';this.style.color=\'var(--p)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">'+a+'</button>';
+      return '<button onclick="setManualLocation(\''+a.name+', Dhaka\','+a.lat+','+a.lon+')" style="padding:5px 12px;border-radius:var(--rpill);font-size:.78rem;font-weight:600;background:var(--light);border:1.5px solid var(--border);cursor:pointer;color:var(--text);font-family:var(--font);transition:all .2s;" onmouseover="this.style.borderColor=\'var(--p)\';this.style.color=\'var(--p)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text)\'">'+a.name+'</button>';
     }).join("");
   }
   const inp=document.getElementById("locSearchInput");
@@ -2742,6 +4405,9 @@ function detectGPS(showErrors){
         DB.set(LOC_KEY,{label,lat:pos.coords.latitude,lon:pos.coords.longitude,ts:Date.now()});
         setLocLabel(label,true);
         toast("📍 "+label,"green",2000);
+        if(document.getElementById("page-home").classList.contains("active")){
+          renderSellers();renderPublicMenu();
+        }
       });
     },
     function(){
@@ -2821,6 +4487,11 @@ function setManualLocation(label, lat, lon){
   setLocLabel(label, true);
   closeModal("locModal");
   toast("📍 "+label,"green",2200);
+  // Re-render home if visible so sellers/menu filter by new location
+  if(document.getElementById("page-home").classList.contains("active")){
+    renderSellers();
+    renderPublicMenu();
+  }
 }
 
 /* ── UI helpers ──────────────────────────────────────────── */
